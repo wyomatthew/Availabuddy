@@ -1,0 +1,63 @@
+/* globals */
+body {
+    margin: 0;
+    background-color: #F6F6F6;
+    font-family: 'Raleway';
+    color: #FFFFFF;
+}
+
+/* header */
+
+header {
+    background-color: #0095D3;
+    margin: 0;
+}
+
+h1, h2 {
+    margin: 0;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+h1 {
+    font-size: 32pt;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+h2 {
+    font-size: smaller;
+    font-weight: lighter;
+    background-color: #004068;
+    height: 100%;
+    text-align: right;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+/* calendar and container */
+
+#calendarContainer {
+    height: 5in;
+    width: 90%;
+    margin: 15px;
+    border: 4px solid black;
+    background-color: #FFFFFF;
+}
+
+/* out container */
+
+#outContainer {
+    margin: 15px;
+}
+
+#out {
+    width: 50%;
+    height: 3in;
+    background-color: #FFFFFF;
+}
+
+#copyText {
+    display: block;
+    margin-top: 20px;
+}
