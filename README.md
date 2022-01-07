@@ -4,7 +4,6 @@
 
 ### HTML/CSS To-Do
 - Add icon to browser tab
-- 
 
 ### JavaScript To-Do
 - Make copy text button copy the text
