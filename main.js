@@ -12,7 +12,7 @@ var apiKey = 'AIzaSyA3ec3t_lNdoGv_aqqqBNJCyZSfj1umBw4';
 // Enter the API Discovery Docs that describes the APIs you want to
 // access. In this example, we are accessing the People API, so we load
 // Discovery Doc found here: https://developers.google.com/people/api/rest/
-var discoveryDocs = ["https://people.googleapis.com/$discovery/rest?version=v1"];
+var discoveryDocs = ["https://people.googleapis.com/$discovery/rest?version=v1", "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
 
 // Enter a client ID for a web application from the Google API Console:
 //   https://console.developers.google.com/apis/credentials?project=_

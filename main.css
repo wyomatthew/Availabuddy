@@ -3,7 +3,7 @@ body {
     margin: 0;
     background-color: #F6F6F6;
     font-family: 'Raleway';
-    color: #FFFFFF;
+    color: black;
 }
 
 /* header */
@@ -11,6 +11,7 @@ body {
 header {
     background-color: #0095D3;
     margin: 0;
+    color: white;
 }
 
 h1, h2 {
