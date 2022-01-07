@@ -1,8 +1,5 @@
-var PROJECT_ID = '282170708765';
-var CLIENT_ID = '282170708765-m4s4vcfvqpkt4a5ean74q5q51jg05sa9.apps.googleusercontent.com';
-var API_KEY = 'AIzaSyA3ec3t_lNdoGv_aqqqBNJCyZSfj1umBw4';
-var SCOPES = 'https://www.googleapis.com/auth/compute';
-// const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
+const BASE_ENDPOINT = 'https://www.googleapis.com/calendar/v3';
+const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 fetch('https://accounts.google.com/o/oauth2/v2/auth')
     .then(response => response.json())
@@ -25,7 +22,7 @@ function oauthSignIn() {
         'client_id': CLIENT_ID,
         'redirect_uri': 'http://127.0.0.1:5500/index.html',
         'response_type': 'token',
-        'scope': 'https://www.googleapis.com/auth/drive.metadata.readonly',
+        'scope': SCOPES,
         'include_granted_scopes': 'true',
         'state': 'pass-through value'
     };
@@ -49,3 +46,15 @@ const authBtn = document.getElementById('auth');
 authBtn.addEventListener('click', (el, ev) => {
     oauthSignIn();
 });
+
+function getFreeBusy() {
+    const endpoint = BASE_ENDPOINT + '/freeBusy';
+
+    const from = document.createElement('form');
+    form.setAttribute('method', 'POST');
+    form.setAttribute('action', endpoint);
+
+    // const params = {
+    //     'timeMin': 
+    // }
+}
