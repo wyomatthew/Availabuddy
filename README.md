@@ -1,6 +1,12 @@
 # Calendar-Available
 
 ## To-Do
+
+### HTML/CSS To-Do
+- Add icon to browser tab
+- 
+
+### JavaScript To-Do
 - Make copy text button copy the text
 - Link Google calendar API so user can authenticate !
 - Display calendar information of linked user
