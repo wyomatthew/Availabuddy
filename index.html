@@ -15,7 +15,19 @@
         <h1>Unnamed Calendar Availability App</h1>
         <h2>Developed by Matthew Pickering & Tasneem Pathan</h2>
     </header>
-    <div id="calendarContainer"></div>
+    <div id="calendarContainer">
+        <table id='calendarTable'>
+            <tr>
+                <th>Sunday</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+            </tr>
+        </table>
+    </div>
     <hr>
     <div id="outContainer">
         <textarea readonly id="out" type="text"></textarea>
@@ -33,6 +45,7 @@
     <script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};handleClientLoad()"
         onreadystatechange="if (this.readyState === 'complete') this.onload()">
         </script>
+    <script src='table.js'></script>
 </body>
 
 </html>

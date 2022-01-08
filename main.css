@@ -46,6 +46,17 @@ h2 {
     background-color: #FFFFFF;
 }
 
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table tr {
+    height: 20px;
+    width: 100%;
+    border: 2px solid black;
+}
+
 /* out container */
 
 #outContainer {
