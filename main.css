@@ -54,7 +54,11 @@ table {
 table tr {
     height: 20px;
     width: 100%;
-    border: 2px solid black;
+    
+}
+
+table tr td {
+    border: 1px solid black;
 }
 
 /* out container */
