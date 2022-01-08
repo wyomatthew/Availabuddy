@@ -59,6 +59,7 @@ table tr {
 
 table tr td {
     border: 1px solid black;
+    width: 14%;
 }
 
 /* out container */
