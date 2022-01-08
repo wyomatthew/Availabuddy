@@ -25,8 +25,12 @@ var clientId = '282170708765-m4s4vcfvqpkt4a5ean74q5q51jg05sa9.apps.googleusercon
 // for details.
 var scopes = 'profile';
 
-var authorizeButton = document.getElementById('authorize-button');
-var signoutButton = document.getElementById('signout-button');
+var authorizeButton = document.getElementById('auth');
+var signoutButton = document.getElementById('signout');
+
+let signedIn = false;
+
+const signInStatus = document.getElementById('signInStatus');
 
 function handleClientLoad() {
     // Load the API client and auth2 library
@@ -53,21 +57,30 @@ function initClient() {
 
 function updateSigninStatus(isSignedIn) {
     if (isSignedIn) {
-        authorizeButton.style.display = 'none';
-        signoutButton.style.display = 'block';
+        signedIn = true;
+        signInStatus.innerText = "Signed in!"
+        // authorizeButton.style.display = 'none';
+        // signoutButton.style.display = 'block';
         makeApiCall();
     } else {
-        authorizeButton.style.display = 'block';
-        signoutButton.style.display = 'none';
+        // authorizeButton.style.display = 'block';
+        // signoutButton.style.display = 'none';
+        signInStatus.innerHTML = "Not signed in :("
+        signedIn = false;
     }
 }
 
 function handleAuthClick(event) {
-    gapi.auth2.getAuthInstance().signIn();
+    if (!signedIn) {
+        gapi.auth2.getAuthInstance().signIn();
+    }
 }
 
 function handleSignoutClick(event) {
-    gapi.auth2.getAuthInstance().signOut();
+    if (signedIn) {
+        gapi.auth2.getAuthInstance().signOut();
+    }
+
 }
 
 // Load the API and make an API call.  Display the results on the screen.
