@@ -58,8 +58,14 @@ let mouseDown = false;
 let selected = new Set();
 let currSelected = new Set();
 
+// array of datetimes for currSelected cells
+var times = []; 
+
 // initialize cell of original click
 let firstClicked;
+
+// text stored in the text area
+var freeText = 'Available Times: \n'; 
 
 /**
  * 
@@ -185,9 +191,54 @@ function onMouseUp(ev) {
     // add current set to total selected
     currSelected.forEach(currCell => {
         selected.add(currCell);
+        times.push(parseInt(currCell.getAttribute('data-datetime')));
     });
 
+    addToTextArea(); 
+
     mouseDown = false;
+}
+
+/**
+ * Adds available times to the text area. 
+ */
+function addToTextArea() {
+    var textArea = document.getElementById('out');
+    if (times.length > 0) {
+        times.sort((a, b) => a - b);
+        var endTime = times.length - 1;
+        freeText = freeText + formatDate(new Date(times[0]), true) + ' to ' + formatDate(new Date(times[endTime]), false) + '\n';
+        times = []; 
+    }
+
+    textArea.value = freeText; 
+}
+
+/**
+ * 
+ * Formats the date to make it more readable. 
+ * 
+ * @param {Date} date 
+ * @param {boolean} isStart 
+ * @returns String
+ */
+function formatDate(date, isStart) {
+    if (!isStart) {
+        return date.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+    } else {
+        return date.toLocaleString('en-US', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+    }
 }
 
 /**
