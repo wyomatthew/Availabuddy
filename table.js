@@ -3,6 +3,9 @@ const table = document.getElementById('calendarTable');
 const oneHourNode = document.createElement('tr');
 const numToWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
+// configure cell duration in ms
+const DURATION = 3600000;
+
 // initialize function to convert integer values to RFC dates
 function convertDateToRFC(year = 1970, month = 1, day = 1, hour = 0, minute = 0, second = 0) {
     return year.toString() + '-' +
@@ -226,10 +229,18 @@ function onMouseHover(ev) {
 function onMouseUp(ev) {
     // add current set to total selected
     currSelected.forEach(currCell => {
-        selected.add(currCell);
+        // case on selection type to remove or add current element
+        if (selectToAdd) {
+            selected.add(currCell);
+        } else {
+            selected.delete(currCell);
+        }
     });
 
     mouseDown = false;
+
+    // fill in out box
+    fillOutBox();
 }
 
 /**
@@ -249,6 +260,9 @@ function onMouseTableExit(ev) {
     });
 
     mouseDown = false;
+
+    // fill in out box
+    fillOutBox();
 }
 
 // get table of number elements
@@ -301,9 +315,10 @@ for (let i = 0; i < 24; i++) {
         const currCell = cellNode.cloneNode(false);
         currCell.setAttribute('headers', numToWeek[j]);
 
-        // get datetime of current cell
+        // get datetime of current cell and set duration
         const currDate = new Date(start.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
         currCell.setAttribute('data-datetime', currDate.valueOf());
+        currCell.setAttribute('data-duration', DURATION);
         currRow.appendChild(currCell);
 
         // add to cell list
@@ -323,3 +338,78 @@ table.addEventListener('mouseup', onMouseUp);
 
 // add mouse exit function to table
 table.addEventListener('mouseleave', onMouseTableExit);
+
+const outBox = document.getElementById('out');
+
+// implement function to fill text area with info from selected cells
+function fillOutBox() {
+    // wipe out box
+    outBox.innerHTML = '';
+
+    // add all selected cells to a sorted list
+    const selectedList = new Array();
+    selected.forEach(el => {
+        selectedList.push(el);
+    });
+    selectedList.sort(compareElements);
+
+    // consolidate adjacent durations
+    class Block {
+        constructor(start = 0, end = 0) {
+            this.start = parseInt(start);
+            this.end = parseInt(end);
+        }
+
+        setStart(start) {
+            this.start = start;
+        }
+
+        setEnd(end) {
+            this.end = end;
+        }
+
+        extendEnd(duration) {
+            this.end = this.end + parseInt(duration);
+        }
+
+        toString() {
+            // create start and end dates
+            const startDate = new Date(this.start);
+            const endDate = new Date(this.end);
+            return startDate.toString() + ' to ' + endDate.toString();
+        }
+    }
+
+    // iterate through cells and build blocks
+    const blockList = new Array();
+    let cellIndex = 0;
+    while (cellIndex < selectedList.length) {
+        // get current selected cell and its end time
+        const currCell = selectedList[cellIndex];
+        let lastEnd = parseInt(currCell.dataset.datetime) + parseInt(currCell.dataset.duration);
+        cellIndex++;
+
+        // build current block
+        const currBlock = new Block(currCell.dataset.datetime, lastEnd);
+
+        // iterate until last end does not match next cell's start time
+        while (cellIndex < selectedList.length &&
+            parseInt(selectedList[cellIndex].dataset.datetime) === lastEnd) {
+
+            // add current block
+            currBlock.extendEnd(selectedList[cellIndex].dataset.duration);
+
+            // go to next and configure last end
+            lastEnd = parseInt(currBlock.end);
+            cellIndex++;
+        }
+
+        // add block to list of blocks
+        blockList.push(currBlock);
+    }
+
+    // output blocks to textarea
+    for (const currBlock of blockList) {
+        outBox.innerHTML += currBlock.toString() + '\n';
+    }
+}
