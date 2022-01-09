@@ -86,7 +86,7 @@ function compareElements(el1, el2) {
  * 
  * @param {HTMLElement} el 
  */
-function activateElement(el) {
+function addToCurrent(el) {
     el.style.backgroundColor = 'green';
     el.style.borderTopWidth = '0px';
     el.style.borderBottomWidth = '0px';
@@ -99,7 +99,7 @@ function activateElement(el) {
  * 
  * @param {HTMLElement} el 
  */
-function deactivateElement(el) {
+function removeFromCurrent(el) {
     el.style.backgroundColor = 'white';
     el.style.borderTopWidth = '1px';
     el.style.borderBottomWidth = '1px';
@@ -118,7 +118,7 @@ function onMouseDown(ev) {
     if (!mouseDown) {
         // active cell if it is not already activated
         currSelected.clear();
-        activateElement(ev.target);
+        addToCurrent(ev.target);
 
         // configure clicked cell as first clicked
         firstClicked = ev.target;
@@ -141,7 +141,7 @@ function onMouseHover(ev) {
         currSelected.clear();
         for (let currCell of cellList) {
             if (!selected.has(currCell)) {
-                deactivateElement(currCell);
+                removeFromCurrent(currCell);
             }
         }
 
@@ -171,7 +171,7 @@ function onMouseHover(ev) {
         currSelected.clear();
         for (let i = lo; i <= hi; i++) {
             // activate current element
-            activateElement(cellList[i]);
+            addToCurrent(cellList[i]);
         }
     }
 }
