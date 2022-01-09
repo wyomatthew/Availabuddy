@@ -3,6 +3,16 @@ const table = document.getElementById('calendarTable');
 const oneHourNode = document.createElement('tr');
 const numToWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
+function clickEvent() {
+
+}
+
+// get table of number elements
+const numElements = Array(7);
+for (let i = 0; i < numElements.length; i++) {
+    numElements[i] = document.getElementById(numToWeek[i] + 'num');
+}
+
 for (let i = 0; i < 24; i++) {
     const currRow = oneHourNode.cloneNode(false);
     currRow.setAttribute('id', `${i}`);
@@ -14,5 +24,8 @@ for (let i = 0; i < 24; i++) {
         const currCell = cellNode.cloneNode(false);
         currCell.setAttribute('headers', numToWeek[j]);
         currRow.appendChild(currCell);
+        currCell.addEventListener('click', (event) => {
+            event.target.style.backgroundColor = 'red';
+        })
     }
 }
