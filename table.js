@@ -272,6 +272,28 @@ for (let i = 0; i < 24; i++) {
     currRow.setAttribute('id', `${i}`);
     table.appendChild(currRow);
 
+    // append label cell
+    const rowLabel = document.createElement('td');
+    rowLabel.setAttribute('headhers', 'label');
+    rowLabel.setAttribute('class', 'labelCell');
+
+    // append time
+    if (i === 0) {
+        rowLabel.appendChild(document.createTextNode('12 AM'));
+    } else if (i === 12) {
+        rowLabel.appendChild(document.createTextNode('12 PM'));
+    } else {
+        const isAm = Math.floor(i / 12) === 0;
+        const hour = i % 12;
+        if (isAm) {
+            rowLabel.appendChild(document.createTextNode(`${hour} AM`));
+        } else {
+            rowLabel.appendChild(document.createTextNode(`${hour} PM`));
+        }
+
+    }
+    currRow.appendChild(rowLabel);
+
     // append 7 cells to the row
     const cellNode = document.createElement('td');
     for (let j = 0; j < 7; j++) {
