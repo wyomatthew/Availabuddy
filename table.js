@@ -3,6 +3,9 @@ const table = document.getElementById('calendarTable');
 const oneHourNode = document.createElement('tr');
 const numToWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
+// configure cell duration in ms
+const DURATION = 3600000;
+
 // initialize function to convert integer values to RFC dates
 function convertDateToRFC(year = 1970, month = 1, day = 1, hour = 0, minute = 0, second = 0) {
     return year.toString() + '-' +
@@ -57,6 +60,7 @@ let mouseDown = false;
 // initialize grand set and current set of cells that have been highlighted
 let selected = new Set();
 let currSelected = new Set();
+let selectToAdd = true;
 
 // array of datetimes for currSelected cells
 var times = []; 
@@ -87,8 +91,7 @@ function compareElements(el1, el2) {
 }
 
 /**
- * Activates element as selected by coloring it, deleting its border, and adding
- * it to the current selected set
+ * Marks an element as activated by coloring it and removing borders
  * 
  * @param {HTMLElement} el 
  */
@@ -96,6 +99,34 @@ function activateElement(el) {
     el.style.backgroundColor = 'green';
     el.style.borderTopWidth = '0px';
     el.style.borderBottomWidth = '0px';
+}
+
+/**
+ * Marks an element as deactivated by whiting it out and adding borders
+ * 
+ * @param {HTMLElement} el 
+ */
+function deactivateElement(el) {
+    el.style.backgroundColor = 'white';
+    el.style.borderTopWidth = '1px';
+    el.style.borderBottomWidth = '1px';
+}
+
+/**
+ * Activates element as selected by coloring it, deleting its border, and adding
+ * it to the current selected set
+ * 
+ * @param {HTMLElement} el 
+ */
+function addToCurrent(el) {
+    // case on selection type
+    if (selectToAdd) {
+        // activate the element
+        activateElement(el);
+    } else {
+        // deactivate the element
+        deactivateElement(el);
+    }
     currSelected.add(el);
 }
 
@@ -105,10 +136,13 @@ function activateElement(el) {
  * 
  * @param {HTMLElement} el 
  */
-function deactivateElement(el) {
-    el.style.backgroundColor = 'white';
-    el.style.borderTopWidth = '1px';
-    el.style.borderBottomWidth = '1px';
+function removeFromCurrent(el) {
+    if (selectToAdd) {
+        // deactivate the element
+        deactivateElement(el);
+    } else {
+        activateElement(el);
+    }
     currSelected.delete(el);
 }
 
@@ -122,9 +156,12 @@ function deactivateElement(el) {
 function onMouseDown(ev) {
     // if mouse is not already down, record click
     if (!mouseDown) {
+        // case on whether or not current element is selected for selection type
+        selectToAdd = !selected.has(ev.target);
+
         // active cell if it is not already activated
         currSelected.clear();
-        activateElement(ev.target);
+        addToCurrent(ev.target);
 
         // configure clicked cell as first clicked
         firstClicked = ev.target;
@@ -143,13 +180,22 @@ function onMouseDown(ev) {
 function onMouseHover(ev) {
     // activate tile if we are in mouse down mode
     if (mouseDown) {
-        // wipe curr selected and color all white
-        currSelected.clear();
-        for (let currCell of cellList) {
-            if (!selected.has(currCell)) {
-                deactivateElement(currCell);
+        // revert all members of currSelected and recalculate
+        currSelected.forEach(el => {
+            // case on selection type
+            if (selectToAdd) {
+                // deactivate element if it is not already selected
+                if (!selected.has(el)) {
+                    deactivateElement(el);
+                }
+            } else {
+                // activate element if it is a part of selected
+                if (selected.has(el)) {
+                    activateElement(el);
+                }
             }
-        }
+        })
+        currSelected.clear();
 
         // identify target and case on if it comes before first
         const target = ev.target;
@@ -173,11 +219,10 @@ function onMouseHover(ev) {
             hi = firstIndex;
         }
 
-        // activate all elements in range
-        currSelected.clear();
+        // add all relevant elements in range to working set
         for (let i = lo; i <= hi; i++) {
             // activate current element
-            activateElement(cellList[i]);
+            addToCurrent(cellList[i]);
         }
     }
 }
@@ -190,13 +235,21 @@ function onMouseHover(ev) {
 function onMouseUp(ev) {
     // add current set to total selected
     currSelected.forEach(currCell => {
-        selected.add(currCell);
-        times.push(parseInt(currCell.getAttribute('data-datetime')));
+        // case on selection type to remove or add current element
+        if (selectToAdd) {
+            selected.add(currCell);
+            times.push(parseInt(currCell.getAttribute('data-datetime')));
+        } else {
+            selected.delete(currCell);
+        }
     });
 
     addToTextArea(); 
 
     mouseDown = false;
+
+    // fill in out box
+    fillOutBox(selected);
 }
 
 /**
@@ -249,10 +302,18 @@ function formatDate(date, isStart) {
 function onMouseTableExit(ev) {
     // add current set to total selected
     currSelected.forEach(currCell => {
-        selected.add(currCell);
+        // case on selection type to remove or add current element
+        if (selectToAdd) {
+            selected.add(currCell);
+        } else {
+            selected.delete(currCell);
+        }
     });
 
     mouseDown = false;
+
+    // fill in out box
+    fillOutBox(selected);
 }
 
 // get table of number elements
@@ -276,6 +337,28 @@ for (let i = 0; i < 24; i++) {
     currRow.setAttribute('id', `${i}`);
     table.appendChild(currRow);
 
+    // append label cell
+    const rowLabel = document.createElement('td');
+    rowLabel.setAttribute('headhers', 'label');
+    rowLabel.setAttribute('class', 'labelCell');
+
+    // append time
+    if (i === 0) {
+        rowLabel.appendChild(document.createTextNode('12 AM'));
+    } else if (i === 12) {
+        rowLabel.appendChild(document.createTextNode('12 PM'));
+    } else {
+        const isAm = Math.floor(i / 12) === 0;
+        const hour = i % 12;
+        if (isAm) {
+            rowLabel.appendChild(document.createTextNode(`${hour} AM`));
+        } else {
+            rowLabel.appendChild(document.createTextNode(`${hour} PM`));
+        }
+
+    }
+    currRow.appendChild(rowLabel);
+
     // append 7 cells to the row
     const cellNode = document.createElement('td');
     for (let j = 0; j < 7; j++) {
@@ -283,9 +366,10 @@ for (let i = 0; i < 24; i++) {
         const currCell = cellNode.cloneNode(false);
         currCell.setAttribute('headers', numToWeek[j]);
 
-        // get datetime of current cell
+        // get datetime of current cell and set duration
         const currDate = new Date(start.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
         currCell.setAttribute('data-datetime', currDate.valueOf());
+        currCell.setAttribute('data-duration', DURATION);
         currRow.appendChild(currCell);
 
         // add to cell list
@@ -305,3 +389,85 @@ table.addEventListener('mouseup', onMouseUp);
 
 // add mouse exit function to table
 table.addEventListener('mouseleave', onMouseTableExit);
+
+const outBox = document.getElementById('out');
+
+// implement function to fill text area with info from selected cells
+
+/**
+ * Takes input set of selected cell elements, cosolidates adjacent cells
+ * into blocks, and prints the consolidated blocks to the out box
+ * 
+ * @param {Set<HTMLElement>} selectedCellSet 
+ */
+function fillOutBox(selectedCellSet) {
+    // wipe out box
+    outBox.innerHTML = '';
+
+    // add all selected cells to a sorted list
+    const selectedList = new Array();
+    selectedCellSet.forEach(el => {
+        selectedList.push(el);
+    });
+    selectedList.sort(compareElements);
+
+    // consolidate adjacent durations
+    class Block {
+        constructor(start = 0, end = 0) {
+            this.start = parseInt(start);
+            this.end = parseInt(end);
+        }
+
+        setStart(start) {
+            this.start = start;
+        }
+
+        setEnd(end) {
+            this.end = end;
+        }
+
+        extendEnd(duration) {
+            this.end = this.end + parseInt(duration);
+        }
+
+        toString() {
+            // create start and end dates
+            const startDate = new Date(this.start);
+            const endDate = new Date(this.end);
+            return startDate.toString() + ' to ' + endDate.toString();
+        }
+    }
+
+    // iterate through cells and build blocks
+    const blockList = new Array();
+    let cellIndex = 0;
+    while (cellIndex < selectedList.length) {
+        // get current selected cell and its end time
+        const currCell = selectedList[cellIndex];
+        let lastEnd = parseInt(currCell.dataset.datetime) + parseInt(currCell.dataset.duration);
+        cellIndex++;
+
+        // build current block
+        const currBlock = new Block(currCell.dataset.datetime, lastEnd);
+
+        // iterate until last end does not match next cell's start time
+        while (cellIndex < selectedList.length &&
+            parseInt(selectedList[cellIndex].dataset.datetime) === lastEnd) {
+
+            // add current block
+            currBlock.extendEnd(selectedList[cellIndex].dataset.duration);
+
+            // go to next and configure last end
+            lastEnd = parseInt(currBlock.end);
+            cellIndex++;
+        }
+
+        // add block to list of blocks
+        blockList.push(currBlock);
+    }
+
+    // output blocks to textarea
+    for (const currBlock of blockList) {
+        outBox.innerHTML += currBlock.toString() + '\n';
+    }
+}
