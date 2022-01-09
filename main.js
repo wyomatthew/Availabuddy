@@ -101,7 +101,27 @@ function addText(message) {
     var label = document.getElementById('eventsList');
     var textContent = document.createTextNode(message + '\n');
     label.appendChild(textContent);
-  }
+}
+
+/**
+ * 
+ * Sets the background color to gray for events in your calendar.
+ * 
+ * @param {Integer} start 
+ * @param {Integer} end 
+ */
+function setCalendarBusy(start, end) {
+    while (start < end) {
+        var elt = document.querySelector("[data-datetime = '" + start + "']");
+        if (elt != null) {
+            elt.style.backgroundColor = 'gray';
+            elt.style.borderTopWidth = '0px';
+            elt.style.borderBottomWidth = '0px';
+        }
+
+        start = start + 3600000;
+    }
+}
 
 function listUpcomingEvents() {
     gapi.client.calendar.events.list({
@@ -138,6 +158,10 @@ function listUpcomingEvents() {
                 minute: 'numeric',
                 hour12: true
             });
+
+            var msStart = new Date(event.start.dateTime).getTime();
+            var msEnd = new Date(event.end.dateTime).getTime();
+            setCalendarBusy(msStart, msEnd);
 
             var endDate = new Date(event.end.dateTime).toLocaleString('en-US', {
                 hour: 'numeric',
