@@ -40,7 +40,7 @@ const dayOfWeek = start.getDay();
 
 // subtract commensurate number of miliseconds from start
 const MS_IN_DAY = 86400000;
-const MS_IN_YEAR = MS_IN_DAY * 365;
+const MS_IN_HOUR = MS_IN_DAY / 24;
 start = new Date(start.valueOf() - MS_IN_DAY * (dayOfWeek));
 
 // get year month and day of sunday
@@ -146,7 +146,7 @@ for (let i = 0; i < 24; i++) {
         currCell.setAttribute('headers', numToWeek[j]);
 
         // get datetime of current cell
-        const currDate = new Date(start.valueOf() + (j * MS_IN_DAY));
+        const currDate = new Date(start.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
         currCell.setAttribute('data-datetime', currDate.valueOf());
         currRow.appendChild(currCell);
 
@@ -159,7 +159,23 @@ for (let i = 0; i < 24; i++) {
     }
 }
 
+// sort cell list based on time order
+cellList.sort((el1, el2) => {
+    // get ms of both
+    const ms1 = parseInt(el1.dataset.datetime);
+    const ms2 = parseInt(el2.dataset.datetime);
+    if (ms1 < ms2) {
+        return -1;
+    } else if (ms1 === ms2) {
+        return 0;
+    } else {
+        return 1;
+    }
+})
 
+cellList.forEach(el => {
+    console.log(el.dataset.datetime);
+})
 
 // add mouse up function to table
 table.addEventListener('mouseup', onMouseUp);
