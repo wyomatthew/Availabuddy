@@ -144,7 +144,6 @@ function onMouseHover(ev) {
 
         // activate all elements in range
         currSelected.clear();
-        console.log(`Lo is ${lo} and Hi is ${hi}`);
         for (let i = lo; i <= hi; i++) {
             // activate current element
             cellList[i].style.backgroundColor = 'green';
@@ -225,10 +224,6 @@ for (let i = 0; i < 24; i++) {
 
 // sort cell list based on time order
 cellList.sort(compareElements);
-
-cellList.forEach(el => {
-    console.log(el.dataset.datetime);
-})
 
 // add mouse up function to table
 table.addEventListener('mouseup', onMouseUp);
