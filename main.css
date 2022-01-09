@@ -42,14 +42,13 @@ h2 {
     height: 5in;
     width: 90%;
     margin: 15px;
-    border: 1px solid black;
     background-color: #FFFFFF;
     overflow-y: scroll;
 }
 
 table {
     border-collapse: collapse;
-    width: 100%;
+    width: 99.9%;
     height: 100%;
 }
 
