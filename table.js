@@ -240,7 +240,7 @@ function onMouseUp(ev) {
     mouseDown = false;
 
     // fill in out box
-    fillOutBox();
+    fillOutBox(selected);
 }
 
 /**
@@ -262,7 +262,7 @@ function onMouseTableExit(ev) {
     mouseDown = false;
 
     // fill in out box
-    fillOutBox();
+    fillOutBox(selected);
 }
 
 // get table of number elements
@@ -342,13 +342,20 @@ table.addEventListener('mouseleave', onMouseTableExit);
 const outBox = document.getElementById('out');
 
 // implement function to fill text area with info from selected cells
-function fillOutBox() {
+
+/**
+ * Takes input set of selected cell elements, cosolidates adjacent cells
+ * into blocks, and prints the consolidated blocks to the out box
+ * 
+ * @param {Set<HTMLElement>} selectedCellSet 
+ */
+function fillOutBox(selectedCellSet) {
     // wipe out box
     outBox.innerHTML = '';
 
     // add all selected cells to a sorted list
     const selectedList = new Array();
-    selected.forEach(el => {
+    selectedCellSet.forEach(el => {
         selectedList.push(el);
     });
     selectedList.sort(compareElements);
