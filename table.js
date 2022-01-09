@@ -54,11 +54,25 @@ start.setHours(0, 0, 0, 0);
 // initialize variable to store user state
 let mouseDown = false;
 
-// initialize set of cells that have been highlighted
+// initialize grand set and current set of cells that have been highlighted
 let selected = new Set();
+let currSelected = new Set();
 
 // initialize cell of original click
 let firstClicked;
+
+function compareElements(el1, el2) {
+    // get ms of both
+    const ms1 = parseInt(el1.dataset.datetime);
+    const ms2 = parseInt(el2.dataset.datetime);
+    if (ms1 < ms2) {
+        return -1;
+    } else if (ms1 === ms2) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
 
 /**
  * Handles the action of user clicking mouse down on a tile. The clicked
@@ -80,6 +94,10 @@ function onMouseDown(ev) {
         // configure clicked cell as first clicked
         firstClicked = ev.target;
 
+        // initialize curr set
+        currSelected = new Set();
+        currSelected.add(firstClicked);
+
         // change state
         mouseDown = true;
     }
@@ -94,8 +112,44 @@ function onMouseDown(ev) {
 function onMouseHover(ev) {
     // activate tile if we are in mouse down mode
     if (mouseDown) {
-        ev.target.style.backgroundColor = 'green';
-        selected.add(ev.target);
+        // wipe curr selected and color all white
+        currSelected.clear();
+        for (let currCell of cellList) {
+            if (!selected.has(currCell)) {
+                currCell.style.backgroundColor = 'white';
+            }
+        }
+
+        // identify target and case on if it comes before first
+        const target = ev.target;
+
+        // get indices of target and first clicked elemnts
+        const firstIndex = cellList.indexOf(firstClicked);
+        const targetIndex = cellList.indexOf(target);
+
+        // case on which comes first for iterative indices
+        let lo;
+        let hi;
+        if (firstIndex < targetIndex) {
+            lo = firstIndex;
+            hi = targetIndex;
+        } else if (firstIndex > targetIndex) {
+            lo = targetIndex;
+            hi = firstIndex;
+        } else {
+            // only element should be first
+            lo = firstIndex;
+            hi = firstIndex;
+        }
+
+        // activate all elements in range
+        currSelected.clear();
+        console.log(`Lo is ${lo} and Hi is ${hi}`);
+        for (let i = lo; i <= hi; i++) {
+            // activate current element
+            cellList[i].style.backgroundColor = 'green';
+            currSelected.add(cellList[i]);
+        }
     }
 }
 
@@ -105,6 +159,11 @@ function onMouseHover(ev) {
  * @param {Event} ev 
  */
 function onMouseUp(ev) {
+    // add current set to total selected
+    currSelected.forEach(currCell => {
+        selected.add(currCell);
+    });
+
     mouseDown = false;
 }
 
@@ -114,6 +173,11 @@ function onMouseUp(ev) {
  * @param {Event} ev 
  */
 function onMouseTableExit(ev) {
+    // add current set to total selected
+    currSelected.forEach(currCell => {
+        selected.add(currCell);
+    });
+
     mouseDown = false;
 }
 
@@ -160,18 +224,7 @@ for (let i = 0; i < 24; i++) {
 }
 
 // sort cell list based on time order
-cellList.sort((el1, el2) => {
-    // get ms of both
-    const ms1 = parseInt(el1.dataset.datetime);
-    const ms2 = parseInt(el2.dataset.datetime);
-    if (ms1 < ms2) {
-        return -1;
-    } else if (ms1 === ms2) {
-        return 0;
-    } else {
-        return 1;
-    }
-})
+cellList.sort(compareElements);
 
 cellList.forEach(el => {
     console.log(el.dataset.datetime);
