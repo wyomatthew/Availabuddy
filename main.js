@@ -62,6 +62,7 @@ function updateSigninStatus(isSignedIn) {
         // authorizeButton.style.display = 'none';
         // signoutButton.style.display = 'block';
         makeApiCall();
+        listUpcomingEvents();
     } else {
         // authorizeButton.style.display = 'block';
         // signoutButton.style.display = 'none';
@@ -95,3 +96,60 @@ function makeApiCall() {
         document.getElementById('content').appendChild(p);
     });
 }
+
+function addText(message) {
+    var label = document.getElementById('eventsList');
+    var textContent = document.createTextNode(message + '\n');
+    label.appendChild(textContent);
+  }
+
+function listUpcomingEvents() {
+    gapi.client.calendar.events.list({
+      'calendarId': 'primary',
+      'timeMin': (new Date()).toISOString(),
+      'showDeleted': false,
+      'singleEvents': true,
+      'maxResults': 10,
+      'orderBy': 'startTime'
+    }).then(function(response) {
+      var events = response.result.items;
+      addText('Upcoming events:');
+
+      if (events.length > 0) {
+        for (i = 0; i < events.length; i++) {
+          var event = events[i];
+          var when = event.start.dateTime;
+          if (!when) {
+            when = event.start.date;
+            var date = new Date(when).toLocaleString('en-US', {
+                timeZone: 'UTC', 
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
+            });
+
+            addText(event.summary + ' (' + date + ')');
+          } else {
+            var startDate = new Date(when).toLocaleString('en-US', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            });
+
+            var endDate = new Date(event.end.dateTime).toLocaleString('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            });
+
+            addText(event.summary + ' (' + startDate + ' to ' + endDate + ')');
+          }
+        }
+      } else {
+        addText('No upcoming events found.');
+      }
+    });
+  }
