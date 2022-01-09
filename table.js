@@ -61,6 +61,12 @@ let currSelected = new Set();
 // initialize cell of original click
 let firstClicked;
 
+/**
+ * 
+ * @param {HTMLElement} el1 
+ * @param {HTMLElement} el2 
+ * @returns -1 if el1 is before el2, 0 if they're the same, 1 if el1 is after el2
+ */
 function compareElements(el1, el2) {
     // get ms of both
     const ms1 = parseInt(el1.dataset.datetime);
@@ -75,6 +81,32 @@ function compareElements(el1, el2) {
 }
 
 /**
+ * Activates element as selected by coloring it, deleting its border, and adding
+ * it to the current selected set
+ * 
+ * @param {HTMLElement} el 
+ */
+function activateElement(el) {
+    el.style.backgroundColor = 'green';
+    el.style.borderTopWidth = '0px';
+    el.style.borderBottomWidth = '0px';
+    currSelected.add(el);
+}
+
+/**
+ * Deactivates element by making it white, re-adding border, and removing it
+ * from the current selected set
+ * 
+ * @param {HTMLElement} el 
+ */
+function deactivateElement(el) {
+    el.style.backgroundColor = 'white';
+    el.style.borderTopWidth = '1px';
+    el.style.borderBottomWidth = '1px';
+    currSelected.delete(el);
+}
+
+/**
  * Handles the action of user clicking mouse down on a tile. The clicked
  * tile is highlighted, added to selected, and the user is put into mouseDown 
  * state
@@ -85,18 +117,11 @@ function onMouseDown(ev) {
     // if mouse is not already down, record click
     if (!mouseDown) {
         // active cell if it is not already activated
-        if (!selected.has(ev.target)) {
-            // activate cell
-            ev.target.style.backgroundColor = 'green';
-            selected.add(ev.target);
-        }
+        currSelected.clear();
+        activateElement(ev.target);
 
         // configure clicked cell as first clicked
         firstClicked = ev.target;
-
-        // initialize curr set
-        currSelected = new Set();
-        currSelected.add(firstClicked);
 
         // change state
         mouseDown = true;
@@ -116,7 +141,7 @@ function onMouseHover(ev) {
         currSelected.clear();
         for (let currCell of cellList) {
             if (!selected.has(currCell)) {
-                currCell.style.backgroundColor = 'white';
+                deactivateElement(currCell);
             }
         }
 
@@ -146,8 +171,7 @@ function onMouseHover(ev) {
         currSelected.clear();
         for (let i = lo; i <= hi; i++) {
             // activate current element
-            cellList[i].style.backgroundColor = 'green';
-            currSelected.add(cellList[i]);
+            activateElement(cellList[i]);
         }
     }
 }
