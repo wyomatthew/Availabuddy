@@ -286,7 +286,7 @@ function setCalendarBusy(start, end) {
     cellList.forEach(el => {
         // check if cell start time falls within window
         const startTime = parseInt(el.dataset.datetime);
-        if (startTime >= start && startTime <= end) {
+        if (startTime >= start && startTime < end) {
             markAsOccupied(el);
         }
     })
