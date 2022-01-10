@@ -32,6 +32,18 @@ let signedIn = false;
 
 const signInStatus = document.getElementById('signInStatus');
 
+// define class to handle each calendar
+class Calendar {
+    constructor(id) {
+        this.id = id;
+        this.events = new Array();
+    }
+
+    addEvent(event) {
+        this.events.push(event);
+    }
+}
+
 function handleClientLoad() {
     // Load the API client and auth2 library
     gapi.load('client:auth2', initClient);
@@ -67,12 +79,15 @@ function drawCheckBoxes(calendarList) {
     // iterate over list
     console.log(calendarList);
     calendarList.forEach(currCal => {
-        // create checkbox for current calendar
+        // create checkbox and wrapper for current calendar
+        const wrapper = document.createElement('div');
         const checkBox = document.createElement('input');
         checkBox.setAttribute('type', 'checkbox');
         checkBox.setAttribute('id', currCal.id);
-        checkBox.innerHTML = currCal.id;
-        container.appendChild(checkBox);
+        wrapper.appendChild(checkBox);
+        wrapper.appendChild(document.createTextNode(' ' + currCal.summary));
+
+        container.appendChild(wrapper);
     })
 }
 
@@ -82,6 +97,8 @@ function drawCheckBoxes(calendarList) {
 function onSignIn() {
     // get all user calendars
     getCalendars().then(drawCheckBoxes);
+
+    // 
     listUpcomingEvents(start, new Date(start.valueOf() + (MS_IN_WEEK)));
 }
 
@@ -170,6 +187,8 @@ function getCalendars() {
         });
     });
 }
+
+
 
 /**
  * Iterates through events in the user's calendars ranging between the start

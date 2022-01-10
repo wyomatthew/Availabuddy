@@ -86,12 +86,7 @@ table tr td {
 
 #leftOut, #rightOut {
     display: inline-block;
-    width: 40%;
-    height: 100%;
-}
-
-#rightOut input {
-    display: block;
+    vertical-align: top;
 }
 
 #out {
