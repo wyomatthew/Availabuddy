@@ -55,14 +55,43 @@ function initClient() {
     });
 }
 
+/**
+ * Takes passed in list of calendars and creates checkbox for each calendar
+ * 
+ * @param {*} calendarList 
+ */
+function drawCheckBoxes(calendarList) {
+    // identify checkbox container
+    const container = document.getElementById('rightOut');
+
+    // iterate over list
+    console.log(calendarList);
+    calendarList.forEach(currCal => {
+        // create checkbox for current calendar
+        const checkBox = document.createElement('input');
+        checkBox.setAttribute('type', 'checkbox');
+        checkBox.setAttribute('id', currCal.id);
+        checkBox.innerHTML = currCal.id;
+        container.appendChild(checkBox);
+    })
+}
+
+/**
+ * Body of methods to call upon a user being signed in
+ */
+function onSignIn() {
+    // get all user calendars
+    getCalendars().then(drawCheckBoxes);
+    listUpcomingEvents(start, new Date(start.valueOf() + (MS_IN_WEEK)));
+}
+
 function updateSigninStatus(isSignedIn) {
     if (isSignedIn) {
         signedIn = true;
         signInStatus.innerText = "Signed in!"
         // authorizeButton.style.display = 'none';
         // signoutButton.style.display = 'block';
-        makeApiCall();
-        listUpcomingEvents(start, new Date(start.valueOf() + (MS_IN_WEEK)));
+        onSignIn();
     } else {
         // authorizeButton.style.display = 'block';
         // signoutButton.style.display = 'none';
@@ -82,19 +111,6 @@ function handleSignoutClick(event) {
         gapi.auth2.getAuthInstance().signOut();
     }
 
-}
-
-// Load the API and make an API call.  Display the results on the screen.
-function makeApiCall() {
-    gapi.client.people.people.get({
-        'resourceName': 'people/me',
-        'requestMask.includeField': 'person.names'
-    }).then(function (resp) {
-        var p = document.createElement('p');
-        var name = resp.result.names[0].givenName;
-        p.appendChild(document.createTextNode('Hello, ' + name + '!'));
-        document.getElementById('content').appendChild(p);
-    });
 }
 
 function addText(message) {
@@ -143,6 +159,25 @@ function setCalendarBusy(start, end) {
     })
 }
 
+/**
+ * @returns list of calendar objects in user's list
+ */
+function getCalendars() {
+    return new Promise((resolve, reject) => {
+        // get list of calendars
+        gapi.client.calendar.calendarList.list({}).then(response => {
+            resolve(response.result.items);
+        });
+    });
+}
+
+/**
+ * Iterates through events in the user's calendars ranging between the start
+ * and end dates
+ * 
+ * @param {Date} startDate 
+ * @param {Date} endDate 
+ */
 function listUpcomingEvents(startDate, endDate) {
     console.log(gapi.client.calendar);
     gapi.client.calendar.calendarList.list({
