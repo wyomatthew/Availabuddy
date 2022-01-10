@@ -62,14 +62,11 @@ let selected = new Set();
 let currSelected = new Set();
 let selectToAdd = true;
 
-// array of datetimes for currSelected cells
-var times = []; 
-
 // initialize cell of original click
 let firstClicked;
 
 // text stored in the text area
-var freeText = 'Available Times: \n'; 
+var freeText = 'Available Times: \n';
 
 /**
  * 
@@ -238,33 +235,15 @@ function onMouseUp(ev) {
         // case on selection type to remove or add current element
         if (selectToAdd) {
             selected.add(currCell);
-            times.push(parseInt(currCell.getAttribute('data-datetime')));
         } else {
             selected.delete(currCell);
         }
     });
 
-    addToTextArea(); 
-
     mouseDown = false;
 
     // fill in out box
     fillOutBox(selected);
-}
-
-/**
- * Adds available times to the text area. 
- */
-function addToTextArea() {
-    var textArea = document.getElementById('out');
-    if (times.length > 0) {
-        times.sort((a, b) => a - b);
-        var endTime = times.length - 1;
-        freeText = freeText + formatDate(new Date(times[0]), true) + ' to ' + formatDate(new Date(times[endTime]), false) + '\n';
-        times = []; 
-    }
-
-    textArea.value = freeText; 
 }
 
 /**
@@ -403,6 +382,7 @@ const outBox = document.getElementById('out');
 function fillOutBox(selectedCellSet) {
     // wipe out box
     outBox.innerHTML = '';
+    outBox.innerHTML = freeText;
 
     // add all selected cells to a sorted list
     const selectedList = new Array();
@@ -434,7 +414,7 @@ function fillOutBox(selectedCellSet) {
             // create start and end dates
             const startDate = new Date(this.start);
             const endDate = new Date(this.end);
-            return startDate.toString() + ' to ' + endDate.toString();
+            return formatDate(startDate, true) + ' to ' + formatDate(endDate, false);
         }
     }
 
