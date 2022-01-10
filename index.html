@@ -42,7 +42,7 @@
     <hr>
     <div id="outContainer">
         <textarea readonly id="out" type="text"></textarea>
-        <button id="copyText">Copy Text</button>
+        <button onclick="copyText()" id="copyText">Copy Text</button>
         <button id="auth">Authorize</button>
         <button id="signout">Sign Out</button>
     </div>
@@ -57,7 +57,13 @@
     <script src='main.js'></script>
     <script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};handleClientLoad()"
         onreadystatechange="if (this.readyState === 'complete') this.onload()">
-        </script>
+    </script>
+
+    <script>
+        function copyText() {
+            navigator.clipboard.writeText(document.getElementById('out').value);
+        }
+    </script>
     <script src='table.js'></script>
 </body>
 
