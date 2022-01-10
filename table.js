@@ -44,6 +44,7 @@ const dayOfWeek = start.getDay();
 // subtract commensurate number of miliseconds from start
 const MS_IN_DAY = 86400000;
 const MS_IN_HOUR = MS_IN_DAY / 24;
+const MS_IN_WEEK = MS_IN_DAY * 7;
 start = new Date(start.valueOf() - MS_IN_DAY * (dayOfWeek));
 
 // get year month and day of sunday

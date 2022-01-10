@@ -62,7 +62,7 @@ function updateSigninStatus(isSignedIn) {
         // authorizeButton.style.display = 'none';
         // signoutButton.style.display = 'block';
         makeApiCall();
-        listUpcomingEvents();
+        listUpcomingEvents(start, new Date(start.valueOf() + (MS_IN_WEEK)));
     } else {
         // authorizeButton.style.display = 'block';
         // signoutButton.style.display = 'none';
@@ -104,6 +104,17 @@ function addText(message) {
 }
 
 /**
+ * Configures passed in element to be occupied
+ * 
+ * @param {HTMLElement} elt
+ */
+function markAsOccupied(elt) {
+    elt.style.backgroundColor = 'gray';
+    elt.style.borderTopWidth = '0px';
+    elt.style.borderBottomWidth = '0px';
+}
+
+/**
  * 
  * Sets the background color to gray for events in your calendar.
  * 
@@ -111,69 +122,89 @@ function addText(message) {
  * @param {Integer} end 
  */
 function setCalendarBusy(start, end) {
-    while (start < end) {
-        var elt = document.querySelector("[data-datetime = '" + start + "']");
-        if (elt != null) {
-            elt.style.backgroundColor = 'gray';
-            elt.style.borderTopWidth = '0px';
-            elt.style.borderBottomWidth = '0px';
-        }
+    // while (start < end) {
+    //     var elt = document.querySelector("[data-datetime = '" + start + "']");
+    //     if (elt != null) {
+    //         elt.style.backgroundColor = 'gray';
+    //         elt.style.borderTopWidth = '0px';
+    //         elt.style.borderBottomWidth = '0px';
+    //     }
 
-        start = start + 3600000;
-    }
+    //     start = start + 3600000;
+    // }
+
+    // iterate over all cells
+    cellList.forEach(el => {
+        // check if cell start time falls within window
+        const startTime = parseInt(el.dataset.datetime);
+        console.log(startTime);
+        if (startTime >= start && startTime <= end) {
+            markAsOccupied(el);
+        }
+    })
 }
 
-function listUpcomingEvents() {
-    gapi.client.calendar.events.list({
-      'calendarId': 'primary',
-      'timeMin': (new Date()).toISOString(),
-      'showDeleted': false,
-      'singleEvents': true,
-      'maxResults': 10,
-      'orderBy': 'startTime'
-    }).then(function(response) {
-      var events = response.result.items;
-      addText('Upcoming events:');
+function listUpcomingEvents(startDate, endDate) {
+    gapi.client.calendar.calendarList.list({
+        // No parameters yay
+    }).then(response => {
+        // get calendar list
+        const calendarList = response.result.items;
+        calendarList.forEach(currCal => {
+            gapi.client.calendar.events.list({
+                'calendarId': currCal.id,
+                'timeMin': (startDate).toISOString(),
+                'timeMax': (endDate).toISOString(),
+                'showDeleted': false,
+                'singleEvents': true,
+                'maxResults': 10,
+                'orderBy': 'startTime'
+            }).then(function (response) {
+                var events = response.result.items;
+                // addText('Upcoming events:');
 
-      if (events.length > 0) {
-        for (i = 0; i < events.length; i++) {
-          var event = events[i];
-          var when = event.start.dateTime;
-          if (!when) {
-            when = event.start.date;
-            var date = new Date(when).toLocaleString('en-US', {
-                timeZone: 'UTC', 
-                day: 'numeric',
-                month: 'numeric',
-                year: 'numeric'
+                if (events.length > 0) {
+                    for (i = 0; i < events.length; i++) {
+                        var event = events[i];
+                        var when = event.start.dateTime;
+                        if (!when) {
+                            when = event.start.date;
+                            // var date = new Date(when).toLocaleString('en-US', {
+                            //     timeZone: 'UTC',
+                            //     day: 'numeric',
+                            //     month: 'numeric',
+                            //     year: 'numeric'
+                            // });
+
+                            // addText(event.summary + ' (' + date + ')');
+                        } else {
+                            // var startDate = new Date(when).toLocaleString('en-US', {
+                            //     day: 'numeric',
+                            //     month: 'numeric',
+                            //     year: 'numeric',
+                            //     hour: 'numeric',
+                            //     minute: 'numeric',
+                            //     hour12: true
+                            // });
+
+                            var msStart = new Date(event.start.dateTime).getTime();
+                            var msEnd = new Date(event.end.dateTime).getTime();
+                            setCalendarBusy(msStart, msEnd);
+
+                            // var endDate = new Date(event.end.dateTime).toLocaleString('en-US', {
+                            //     hour: 'numeric',
+                            //     minute: 'numeric',
+                            //     hour12: true
+                            // });
+
+                            // addText(event.summary + ' (' + startDate + ' to ' + endDate + ')');
+                        }
+                    }
+                } else {
+                    // addText('No upcoming events found.');
+                }
             });
+        })
+    })
 
-            addText(event.summary + ' (' + date + ')');
-          } else {
-            var startDate = new Date(when).toLocaleString('en-US', {
-                day: 'numeric',
-                month: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            });
-
-            var msStart = new Date(event.start.dateTime).getTime();
-            var msEnd = new Date(event.end.dateTime).getTime();
-            setCalendarBusy(msStart, msEnd);
-
-            var endDate = new Date(event.end.dateTime).toLocaleString('en-US', {
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            });
-
-            addText(event.summary + ' (' + startDate + ' to ' + endDate + ')');
-          }
-        }
-      } else {
-        addText('No upcoming events found.');
-      }
-    });
-  }
+}
