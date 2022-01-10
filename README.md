@@ -6,9 +6,6 @@
 - Add icon to browser tab
 
 ### JavaScript To-Do
-- Make copy text button copy the text
-- Link Google calendar API so user can authenticate !
-- Display calendar information of linked user
-- Allow user to interact with calendar by dragging/dropping !!!
-- Catch drag/drop windows and insert them into text box !!!
-- Design Calendar interface 
+- Get all calendars from user (make checkbox?)
+- Fix bug where highlighting over busy block removes gray highlighting
+- Permit user to reduce calendar size
