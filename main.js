@@ -30,17 +30,45 @@ var signoutButton = document.getElementById('signout');
 
 let signedIn = false;
 
+// define week date boundaries
+// initialize strating date information on Sunday
+let startWeek = new Date();
+
+// get current day of the week
+const dayOfWeek = startWeek.getDay();
+
+// subtract commensurate number of miliseconds from start
+const MS_IN_DAY = 86400000;
+const MS_IN_HOUR = MS_IN_DAY / 24;
+const MS_IN_WEEK = MS_IN_DAY * 7;
+startWeek = new Date(startWeek.valueOf() - MS_IN_DAY * (dayOfWeek));
+
+// get year month and day of sunday
+let year = startWeek.getFullYear();
+let month = startWeek.getMonth() + 1;
+let day = startWeek.getDate();
+
+startWeek.setFullYear(year, month - 1, day);
+startWeek.setHours(0, 0, 0, 0);
+let endWeek = new Date(startWeek.valueOf() + (MS_IN_WEEK));
+
 const signInStatus = document.getElementById('signInStatus');
+let userCalendars = new Array();
 
 // define class to handle each calendar
 class Calendar {
-    constructor(id) {
+    constructor(id, summary) {
         this.id = id;
+        this.summary = summary;
         this.events = new Array();
     }
 
     addEvent(event) {
         this.events.push(event);
+    }
+
+    toString() {
+        return `ID: ${this.id}, Summary: ${this.summary}, Events: ${this.events.toString()}`;
     }
 }
 
@@ -68,9 +96,65 @@ function initClient() {
 }
 
 /**
+ * Uses binary search to identify the cell containing the start time of an event
+ * 
+ * @param {number} startTime 
+ */
+function identifyParentCell(startTime) {
+    function searchForElement(lo, hi) {
+        // check that we have not run out of cells
+        if (lo <= hi) {
+            throw (`startTime ${startTime} is not contained in any cells in the table`);
+        }
+
+        // identify midpoint of bounds
+        const mid = Math.floor((lo + hi) / 2);
+
+        // compare starttime of midpoint to input start time
+        const midStartTime = parseInt(cellList[mid].dataset.datetime);
+        const midEndTime = midStartTime + parseInt(cellList[mid].dataset.duration);
+        if (midStartTime <= startTime && midEndTime > startTime) {
+            // we found cell, return it
+            return cellList[mid];
+        } else if (midStartTime > startTime) {
+            // look in lower half
+            return searchForElement(lo, mid);
+        } else {
+            // look in upper half
+            return searchForElement(mid + 1, hi);
+        }
+    }
+
+    // search in entire table
+    return searchForElement(0, cellList.length);
+}
+
+/**
+ * Reacts to user checking or unchecking a text box
+ * 
+ * @param {Event} ev 
+ */
+function onBoxTick(ev) {
+    // get corresponding calendar
+    console.log(`Called box tick on ${ev}`);
+    const cal = userCalendars.find(cal => {
+        return cal.id == ev.target.id;
+    })
+
+    console.log(`Found calendar ${cal}`);
+
+    cal.events.forEach(ev => {
+        var msStart = new Date(ev.start.dateTime).getTime();
+        var msEnd = new Date(ev.end.dateTime).getTime();
+        console.log(ev);
+        setCalendarBusy(msStart, msEnd);
+    });
+}
+
+/**
  * Takes passed in list of calendars and creates checkbox for each calendar
  * 
- * @param {*} calendarList 
+ * @param {Array<Calendar>} calendarList 
  */
 function drawCheckBoxes(calendarList) {
     // identify checkbox container
@@ -84,11 +168,14 @@ function drawCheckBoxes(calendarList) {
         const checkBox = document.createElement('input');
         checkBox.setAttribute('type', 'checkbox');
         checkBox.setAttribute('id', currCal.id);
+        checkBox.addEventListener('change', onBoxTick);
         wrapper.appendChild(checkBox);
         wrapper.appendChild(document.createTextNode(' ' + currCal.summary));
 
         container.appendChild(wrapper);
-    })
+    });
+
+
 }
 
 /**
@@ -96,10 +183,39 @@ function drawCheckBoxes(calendarList) {
  */
 function onSignIn() {
     // get all user calendars
-    getCalendars().then(drawCheckBoxes);
+    let eventPromises = new Array();
+    getCalendars().then(calendarList => {
+        // iterate over all calendars
+        calendarList.forEach(currCal => {
+            // create calendar object
+            userCalendars.push(new Calendar(currCal.id, currCal.summary));
 
-    // 
-    listUpcomingEvents(start, new Date(start.valueOf() + (MS_IN_WEEK)));
+            // create a promise for each calendar
+            eventPromises.push(getEvents(currCal.id, startWeek, endWeek));
+        });
+    }).then(() => {
+        Promise.allSettled(eventPromises).then(resultArrays => {
+            console.log(resultArrays);
+            // iterate over result arrays
+            for (let i = 0; i < resultArrays.length; i++) {
+                // get current calendar and its events
+                const cal = userCalendars[i];
+                const events = resultArrays[i].value;
+
+                // add all events to calendar
+                events.forEach(ev => {
+                    cal.addEvent(ev);
+                });
+            }
+
+            // return result
+            return userCalendars;
+        }).then(calendarList => {
+            drawCheckBoxes(calendarList);
+        });
+    });
+
+
 }
 
 function updateSigninStatus(isSignedIn) {
@@ -188,7 +304,32 @@ function getCalendars() {
     });
 }
 
+/**
+ * 
+ * @param {string} calendarId 
+ * @param {Date} startDate 
+ * @param {Date} endDate 
+ * @param {number} maxResults 
+ * @returns {Promise} promise containing all events within parameters contained
+ *                    in the input calendar
+ */
+function getEvents(calendarId, startDate, endDate, maxResults = 50) {
+    return new Promise((resolve, reject) => {
+        gapi.client.calendar.events.list({
+            'calendarId': calendarId,
+            'timeMin': (startDate).toISOString(),
+            'timeMax': (endDate).toISOString(),
+            'showDeleted': false,
+            'singleEvents': true,
+            'maxResults': maxResults,
+            'orderBy': 'startTime'
+        }).then(response => {
+            console.log(`Resolving getEvents for calendar ${calendarId}`);
+            resolve(response.result.items);
+        })
+    })
 
+}
 
 /**
  * Iterates through events in the user's calendars ranging between the start
@@ -198,7 +339,6 @@ function getCalendars() {
  * @param {Date} endDate 
  */
 function listUpcomingEvents(startDate, endDate) {
-    console.log(gapi.client.calendar);
     gapi.client.calendar.calendarList.list({
         // No parameters yay
     }).then(response => {

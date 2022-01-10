@@ -35,26 +35,6 @@ function convertRFCToDate(rfcStr) {
     return ret;
 }
 
-// initialize strating date information on Sunday
-let start = new Date();
-
-// get current day of the week
-const dayOfWeek = start.getDay();
-
-// subtract commensurate number of miliseconds from start
-const MS_IN_DAY = 86400000;
-const MS_IN_HOUR = MS_IN_DAY / 24;
-const MS_IN_WEEK = MS_IN_DAY * 7;
-start = new Date(start.valueOf() - MS_IN_DAY * (dayOfWeek));
-
-// get year month and day of sunday
-let year = start.getFullYear();
-let month = start.getMonth() + 1;
-let day = start.getDate();
-
-start.setFullYear(year, month - 1, day);
-start.setHours(0, 0, 0, 0);
-
 // initialize variable to store user state
 let mouseDown = false;
 
@@ -352,7 +332,7 @@ function drawTable() {
 
         // assign text content
         // compute current offset from start date
-        currHead.innerHTML = (new Date(start.valueOf() + (i * MS_IN_DAY))).getDate();
+        currHead.innerHTML = (new Date(startWeek.valueOf() + (i * MS_IN_DAY))).getDate();
         dayLabelNumRow.appendChild(currHead);
     }
     table.appendChild(dayLabelNumRow);
@@ -397,7 +377,7 @@ function drawTable() {
             currCell.setAttribute('class', 'timeCell');
 
             // get datetime of current cell and set duration
-            const currDate = new Date(start.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
+            const currDate = new Date(startWeek.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
             currCell.setAttribute('data-datetime', currDate.valueOf());
             currCell.setAttribute('data-duration', DURATION);
             currRow.appendChild(currCell);
