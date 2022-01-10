@@ -295,73 +295,125 @@ function onMouseTableExit(ev) {
     fillOutBox(selected);
 }
 
-// get table of number elements
-const numElements = Array(7);
-for (let i = 0; i < numElements.length; i++) {
-    numElements[i] = document.getElementById(numToWeek[i] + 'Num');
-}
-
-// initialize numbers for numElements
-let dayNum = 0;
-numElements.forEach(el => {
-    // compute current offset from start date
-    el.innerHTML = (new Date(start.valueOf() + (dayNum * MS_IN_DAY))).getDate();
-    dayNum++;
-})
-
 // build date table
 let cellList = new Array();
-for (let i = 0; i < 24; i++) {
-    const currRow = oneHourNode.cloneNode(false);
-    currRow.setAttribute('id', `${i}`);
-    table.appendChild(currRow);
 
-    // append label cell
-    const rowLabel = document.createElement('td');
-    rowLabel.setAttribute('headhers', 'label');
-    rowLabel.setAttribute('class', 'labelCell');
+/**
+ * Draws main calendar interface as table on document. First clears all table
+ * contents and then draws the day headers, day numbers, and then all hour cells
+ * as well as their hour labels
+ */
+function drawTable() {
+    // empty table
+    let currChild = table.lastElementChild;
+    while (currChild) {
+        table.removeChild(currChild);
+        currChild = table.lastElementChild;
+    }
 
-    // append time
-    if (i === 0) {
-        rowLabel.appendChild(document.createTextNode('12 AM'));
-    } else if (i === 12) {
-        rowLabel.appendChild(document.createTextNode('12 PM'));
-    } else {
-        const isAm = Math.floor(i / 12) === 0;
-        const hour = i % 12;
-        if (isAm) {
-            rowLabel.appendChild(document.createTextNode(`${hour} AM`));
+    // add day labels
+    const dayLabelRow = document.createElement('tr');
+
+    // add time label header
+    const timeLabel = document.createElement('th');
+    timeLabel.setAttribute('id', 'label');
+    dayLabelRow.appendChild(timeLabel);
+
+    // iterate through days of week
+    for (let i = 0; i < numToWeek.length; i++) {
+        // create current node
+        const currHead = document.createElement('th');
+        currHead.setAttribute('id', numToWeek[i]);
+
+        // set text content
+        let content = numToWeek[i];
+        content = content.charAt(0).toUpperCase() + content.slice(1, content.length);
+        currHead.appendChild(document.createTextNode(content));
+
+        // append node to row
+        dayLabelRow.appendChild(currHead);
+    }
+    table.appendChild(dayLabelRow);
+
+    // add day number labels
+    const dayLabelNumRow = document.createElement('tr');
+
+    // add time label header
+    const timeLabelNum = document.createElement('th');
+    timeLabelNum.setAttribute('id', 'labelNum');
+    dayLabelNumRow.appendChild(timeLabelNum);
+
+    // iterate through days of week
+    for (let i = 0; i < numToWeek.length; i++) {
+        // create current node
+        const currHead = document.createElement('th');
+        currHead.setAttribute('id', numToWeek[i] + 'Num');
+
+        // assign text content
+        // compute current offset from start date
+        currHead.innerHTML = (new Date(start.valueOf() + (i * MS_IN_DAY))).getDate();
+        dayLabelNumRow.appendChild(currHead);
+    }
+    table.appendChild(dayLabelNumRow);
+
+    // empty cell list
+    cellList = new Array();
+
+    // create all cell rows
+    for (let i = 0; i < 24; i++) {
+        const currRow = oneHourNode.cloneNode(false);
+        currRow.setAttribute('id', `${i}`);
+        table.appendChild(currRow);
+
+        // append label cell
+        const rowLabel = document.createElement('td');
+        rowLabel.setAttribute('headhers', 'label');
+        rowLabel.setAttribute('class', 'labelCell');
+
+        // append time
+        if (i === 0) {
+            rowLabel.appendChild(document.createTextNode('12 AM'));
+        } else if (i === 12) {
+            rowLabel.appendChild(document.createTextNode('12 PM'));
         } else {
-            rowLabel.appendChild(document.createTextNode(`${hour} PM`));
+            const isAm = Math.floor(i / 12) === 0;
+            const hour = i % 12;
+            if (isAm) {
+                rowLabel.appendChild(document.createTextNode(`${hour} AM`));
+            } else {
+                rowLabel.appendChild(document.createTextNode(`${hour} PM`));
+            }
+
         }
+        currRow.appendChild(rowLabel);
 
+        // append 7 cells to the row
+        const cellNode = document.createElement('td');
+        for (let j = 0; j < 7; j++) {
+            // create current node and add to current row
+            const currCell = cellNode.cloneNode(false);
+            currCell.setAttribute('headers', numToWeek[j]);
+
+            // get datetime of current cell and set duration
+            const currDate = new Date(start.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
+            currCell.setAttribute('data-datetime', currDate.valueOf());
+            currCell.setAttribute('data-duration', DURATION);
+            currRow.appendChild(currCell);
+
+            // add to cell list
+            cellList.push(currCell);
+
+            // add mouse events
+            currCell.addEventListener('mousedown', onMouseDown);
+            currCell.addEventListener('mouseenter', onMouseHover);
+        }
     }
-    currRow.appendChild(rowLabel);
 
-    // append 7 cells to the row
-    const cellNode = document.createElement('td');
-    for (let j = 0; j < 7; j++) {
-        // create current node and add to current row
-        const currCell = cellNode.cloneNode(false);
-        currCell.setAttribute('headers', numToWeek[j]);
-
-        // get datetime of current cell and set duration
-        const currDate = new Date(start.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
-        currCell.setAttribute('data-datetime', currDate.valueOf());
-        currCell.setAttribute('data-duration', DURATION);
-        currRow.appendChild(currCell);
-
-        // add to cell list
-        cellList.push(currCell);
-
-        // add mouse events
-        currCell.addEventListener('mousedown', onMouseDown);
-        currCell.addEventListener('mouseenter', onMouseHover);
-    }
+    // sort cell list based on time order
+    cellList.sort(compareElements);
 }
 
-// sort cell list based on time order
-cellList.sort(compareElements);
+drawTable();
 
 // add mouse up function to table
 table.addEventListener('mouseup', onMouseUp);
