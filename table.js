@@ -393,6 +393,7 @@ function drawTable() {
             // create current node and add to current row
             const currCell = cellNode.cloneNode(false);
             currCell.setAttribute('headers', numToWeek[j]);
+            currCell.setAttribute('class', 'timeCell');
 
             // get datetime of current cell and set duration
             const currDate = new Date(start.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
