@@ -137,7 +137,6 @@ function setCalendarBusy(start, end) {
     cellList.forEach(el => {
         // check if cell start time falls within window
         const startTime = parseInt(el.dataset.datetime);
-        console.log(startTime);
         if (startTime >= start && startTime <= end) {
             markAsOccupied(el);
         }
@@ -145,6 +144,7 @@ function setCalendarBusy(start, end) {
 }
 
 function listUpcomingEvents(startDate, endDate) {
+    console.log(gapi.client.calendar);
     gapi.client.calendar.calendarList.list({
         // No parameters yay
     }).then(response => {
@@ -189,6 +189,7 @@ function listUpcomingEvents(startDate, endDate) {
 
                             var msStart = new Date(event.start.dateTime).getTime();
                             var msEnd = new Date(event.end.dateTime).getTime();
+                            console.log(event);
                             setCalendarBusy(msStart, msEnd);
 
                             // var endDate = new Date(event.end.dateTime).toLocaleString('en-US', {
