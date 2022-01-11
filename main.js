@@ -139,7 +139,6 @@ function identifyParentCell(startTime) {
 function generateEventBox(calEvent) {
     // get duration of cell in ms
     const startDate = new Date(calEvent.start.dateTime);
-    console.log(startDate);
     var msStart = startDate.getTime();
     var msEnd = new Date(calEvent.end.dateTime).getTime();
 
@@ -160,11 +159,12 @@ function generateEventBox(calEvent) {
     // create box element
     const eventBox = document.createElement('div');
     eventBox.setAttribute('class', 'eventBox');
+    eventBox.setAttribute('id', calEvent.id);
     eventBox.style.top = `${parseInt(startCell.offsetTop) + pixelOffset}px`;
     eventBox.style.left = `${parseInt(startCell.offsetLeft)}px`;
     eventBox.style.width = `${parseInt(startCell.offsetWidth)}px`;
     eventBox.style.height = `${(msEnd - msStart) / MS_PER_PIXEL}px`;
-    table.appendChild(eventBox);
+    document.getElementById('calendarContainer').appendChild(eventBox);
 }
 
 /**
@@ -174,21 +174,31 @@ function generateEventBox(calEvent) {
  */
 function onBoxTick(ev) {
     // get corresponding calendar
-    console.log(`Called box tick on ${ev}`);
     const cal = userCalendars.find(cal => {
         return cal.id == ev.target.id;
     })
 
-    console.log(`Found calendar ${cal}`);
+    // case on whether or not box is ticked
+    if (ev.target.checked) {
+        // create all boxes
+        cal.events.forEach(ev => {
+            generateEventBox(ev);
+        });
+    } else {
+        // delete all boxes
+        cal.events.forEach(ev => {
+            // delete current box
+            try {
+                const currBox = document.getElementById(ev.id);
+                document.getElementById('calendarContainer').removeChild(currBox);
+            } catch (e) {
+                // no event there!
+            }
+
+        });
+    }
 
 
-    cal.events.forEach(ev => {
-        generateEventBox(ev);
-        var msStart = new Date(ev.start.dateTime).getTime();
-        var msEnd = new Date(ev.end.dateTime).getTime();
-        console.log(ev);
-        // setCalendarBusy(msStart, msEnd);
-    });
 }
 
 /**

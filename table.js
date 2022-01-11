@@ -6,12 +6,12 @@ const numToWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'frid
 // configure cell width and height
 const CELL_WIDTH = Math.floor((document.getElementById('calendarContainer') * 0.8) * 7);
 const TIME_LABEL_WIDTH = 50;
-const CELL_HEIGHT = 40;
+// const CELL_HEIGHT = 5;
 
 // configure cell duration in ms
 const DURATION = 3600000;
 
-const MS_PER_PIXEL = DURATION / CELL_HEIGHT;
+
 
 // initialize function to convert integer values to RFC dates
 function convertDateToRFC(year = 1970, month = 1, day = 1, hour = 0, minute = 0, second = 0) {
@@ -301,7 +301,6 @@ function drawTable() {
 
     // add day labels
     const dayLabelRow = document.createElement('tr');
-    dayLabelRow.style.height = `${CELL_HEIGHT}px`;
 
     // add time label header
     const timeLabel = document.createElement('th');
@@ -314,7 +313,6 @@ function drawTable() {
         const currHead = document.createElement('th');
         currHead.setAttribute('id', numToWeek[i]);
         currHead.style.width = `${CELL_WIDTH}px`;
-        currHead.style.height = `${CELL_HEIGHT}px`;
 
         // set text content
         let content = numToWeek[i];
@@ -328,7 +326,6 @@ function drawTable() {
 
     // add day number labels
     const dayLabelNumRow = document.createElement('tr');
-    dayLabelNumRow.style.height = `${CELL_HEIGHT}px`;
 
     // add time label header
     const timeLabelNum = document.createElement('th');
@@ -356,7 +353,6 @@ function drawTable() {
     for (let i = 0; i < 24; i++) {
         const currRow = oneHourNode.cloneNode(false);
         currRow.setAttribute('id', `${i}`);
-        currRow.style.height = `${CELL_HEIGHT}px`;
         table.appendChild(currRow);
 
         // append label cell
@@ -388,7 +384,6 @@ function drawTable() {
             const currCell = cellNode.cloneNode(false);
             currCell.setAttribute('headers', numToWeek[j]);
             currCell.setAttribute('class', 'timeCell');
-            currCell.style.height = `${CELL_HEIGHT}`;
 
             // get datetime of current cell and set duration
             const currDate = new Date(startWeek.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
@@ -410,6 +405,7 @@ function drawTable() {
 }
 
 drawTable();
+const MS_PER_PIXEL = DURATION / document.querySelector('td').offsetHeight;
 
 // add mouse up function to table
 table.addEventListener('mouseup', onMouseUp);
