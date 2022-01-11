@@ -292,7 +292,7 @@ let MS_PER_PIXEL;
  * contents and then draws the day headers, day numbers, and then all hour cells
  * as well as their hour labels
  */
-function drawTable() {
+function drawTable(startDate = startWeek) {
     // empty table
     let currChild = table.lastElementChild;
     while (currChild) {
@@ -342,7 +342,7 @@ function drawTable() {
 
         // assign text content
         // compute current offset from start date
-        currHead.innerHTML = (new Date(startWeek.valueOf() + (i * MS_IN_DAY))).getDate();
+        currHead.innerHTML = (new Date(startDate.valueOf() + (i * MS_IN_DAY))).getDate();
         dayLabelNumRow.appendChild(currHead);
     }
     table.appendChild(dayLabelNumRow);
@@ -387,7 +387,7 @@ function drawTable() {
             currCell.setAttribute('class', 'timeCell');
 
             // get datetime of current cell and set duration
-            const currDate = new Date(startWeek.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
+            const currDate = new Date(startDate.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
             currCell.setAttribute('data-datetime', currDate.valueOf());
             currCell.setAttribute('data-duration', DURATION);
             currRow.appendChild(currCell);

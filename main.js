@@ -172,10 +172,18 @@ function generateEventBox(calEvent, cal) {
         eventBox.style.backgroundColor = userColors.event[parseInt(calEvent.colorId)].background;
     }
 
+    // append information
+    eventBox.appendChild(document.createElement('b').appendChild(document.createTextNode(calEvent.summary)));
+
+    // assign padding
+    const EVENT_BOX_PADDING = 4;
+
+    eventBox.style.padding = `${EVENT_BOX_PADDING}px`;
     eventBox.style.top = `${parseInt(startCell.offsetTop) + pixelOffset}px`;
     eventBox.style.left = `${parseInt(startCell.offsetLeft)}px`;
-    eventBox.style.width = `${parseInt(startCell.offsetWidth)}px`;
-    eventBox.style.height = `${(msEnd - msStart) / MS_PER_PIXEL}px`;
+    eventBox.style.width = `${parseInt((startCell.offsetWidth * 0.9) - (EVENT_BOX_PADDING * 2))}px`;
+    eventBox.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL) * 0.9) - (EVENT_BOX_PADDING * 2)}px`;
+
     document.getElementById('calendarContainer').appendChild(eventBox);
 }
 

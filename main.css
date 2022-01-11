@@ -83,10 +83,12 @@ table tr td {
 
 .eventBox {
     margin: 0px;
-    padding: 0px;
-    border: 0px;
     position: absolute;
     background-color: red;
+    border: 1px solid gray;
+    border-radius: 5px;
+    font-family: monospace;
+    display: block;
 }
 
 /* out container */
