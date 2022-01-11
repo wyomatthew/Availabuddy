@@ -99,11 +99,12 @@ function initClient() {
  * Uses binary search to identify the cell containing the start time of an event
  * 
  * @param {number} startTime 
+ * @returns {HTMLElement} parent cell
  */
 function identifyParentCell(startTime) {
     function searchForElement(lo, hi) {
         // check that we have not run out of cells
-        if (lo <= hi) {
+        if (lo >= hi) {
             throw (`startTime ${startTime} is not contained in any cells in the table`);
         }
 
@@ -130,6 +131,43 @@ function identifyParentCell(startTime) {
 }
 
 /**
+ * Given an input calendar event, creates element for event and places it on
+ * the calendar
+ * 
+ * @param {CalendarEvent} calEvent 
+ */
+function generateEventBox(calEvent) {
+    // get duration of cell in ms
+    const startDate = new Date(calEvent.start.dateTime);
+    console.log(startDate);
+    var msStart = startDate.getTime();
+    var msEnd = new Date(calEvent.end.dateTime).getTime();
+
+    // find cell where it should start
+    let startCell;
+    try {
+        startCell = identifyParentCell(msStart);
+    } catch (e) {
+        return;
+    }
+
+    // compute offset from top
+    const timeOffset = msStart - parseInt(startCell.dataset.datetime);
+
+    // compute number of pixels offset represents
+    const pixelOffset = timeOffset / MS_PER_PIXEL;
+
+    // create box element
+    const eventBox = document.createElement('div');
+    eventBox.setAttribute('class', 'eventBox');
+    eventBox.style.top = `${parseInt(startCell.offsetTop) + pixelOffset}px`;
+    eventBox.style.left = `${parseInt(startCell.offsetLeft)}px`;
+    eventBox.style.width = `${parseInt(startCell.offsetWidth)}px`;
+    eventBox.style.height = `${(msEnd - msStart) / MS_PER_PIXEL}px`;
+    table.appendChild(eventBox);
+}
+
+/**
  * Reacts to user checking or unchecking a text box
  * 
  * @param {Event} ev 
@@ -143,11 +181,13 @@ function onBoxTick(ev) {
 
     console.log(`Found calendar ${cal}`);
 
+
     cal.events.forEach(ev => {
+        generateEventBox(ev);
         var msStart = new Date(ev.start.dateTime).getTime();
         var msEnd = new Date(ev.end.dateTime).getTime();
         console.log(ev);
-        setCalendarBusy(msStart, msEnd);
+        // setCalendarBusy(msStart, msEnd);
     });
 }
 

@@ -47,6 +47,7 @@ h2 {
 }
 
 table {
+    position: relative;
     border-collapse: collapse;
     width: 99.9%;
     height: 100%;
@@ -76,6 +77,11 @@ table tr td {
     width: 4%;
     text-align: right;
     padding-right: 1%;
+}
+
+.eventBox {
+    position: absolute;
+    background-color: red;
 }
 
 /* out container */
