@@ -285,6 +285,7 @@ function onMouseTableExit(ev) {
 
 // build date table
 let cellList = new Array();
+let MS_PER_PIXEL;
 
 /**
  * Draws main calendar interface as table on document. First clears all table
@@ -357,7 +358,7 @@ function drawTable() {
 
         // append label cell
         const rowLabel = document.createElement('td');
-        rowLabel.setAttribute('headhers', 'label');
+        rowLabel.setAttribute('headers', 'label');
         rowLabel.setAttribute('class', 'labelCell');
 
         // append time
@@ -400,12 +401,31 @@ function drawTable() {
         }
     }
 
+    // append final time label
+    const finalRow = document.createElement('tr');
+
+    // append label cell
+    const rowLabel = document.createElement('td');
+    rowLabel.setAttribute('headers', 'label');
+    rowLabel.setAttribute('class', 'labelCell');
+    rowLabel.appendChild(document.createTextNode('12 AM'));
+    finalRow.appendChild(rowLabel);
+    table.appendChild(finalRow);
+
     // sort cell list based on time order
     cellList.sort(compareElements);
+    MS_PER_PIXEL = DURATION / document.querySelector('td').offsetHeight;
+
+    // offset labels
+    const labelCells = document.querySelectorAll('.labelCell');
+    const adjustmentPerCell = document.querySelector('td').offsetHeight / 2;
+    for (let i = 0; i < labelCells.length; i++) {
+        // add padding to label
+        labelCells[i].style.bottom = `${adjustmentPerCell}px`;
+    }
 }
 
 drawTable();
-const MS_PER_PIXEL = DURATION / document.querySelector('td').offsetHeight;
 
 // add mouse up function to table
 table.addEventListener('mouseup', onMouseUp);

@@ -78,6 +78,7 @@ table tr td {
     width: 4%;
     text-align: right;
     padding-right: 1%;
+    position: relative;
 }
 
 .eventBox {
