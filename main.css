@@ -89,6 +89,7 @@ table tr td {
     border-radius: 5px;
     font-family: monospace;
     display: block;
+    overflow: hidden;
 }
 
 /* out container */

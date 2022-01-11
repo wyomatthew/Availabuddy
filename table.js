@@ -81,7 +81,7 @@ function compareElements(el1, el2) {
  * @param {HTMLElement} el 
  */
 function activateElement(el) {
-    el.style.backgroundColor = 'green';
+    el.style.backgroundColor = '#77DD77';
     el.style.borderTopWidth = '0px';
     el.style.borderBottomWidth = '0px';
 }

@@ -173,7 +173,11 @@ function generateEventBox(calEvent, cal) {
     }
 
     // append information
-    eventBox.appendChild(document.createElement('b').appendChild(document.createTextNode(calEvent.summary)));
+    const boldText = document.createElement('b');
+    boldText.appendChild(document.createTextNode(calEvent.summary));
+    eventBox.appendChild(boldText);
+    eventBox.appendChild(document.createElement('br'));
+    eventBox.appendChild(document.createTextNode(formatDate(new Date(msStart)) + ' - ' + formatDate(new Date(msEnd))));
 
     // assign padding
     const EVENT_BOX_PADDING = 4;
@@ -183,6 +187,17 @@ function generateEventBox(calEvent, cal) {
     eventBox.style.left = `${parseInt(startCell.offsetLeft)}px`;
     eventBox.style.width = `${parseInt((startCell.offsetWidth * 0.9) - (EVENT_BOX_PADDING * 2))}px`;
     eventBox.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL) * 0.9) - (EVENT_BOX_PADDING * 2)}px`;
+
+    // add enter and leave changes
+    eventBox.addEventListener('mouseenter', (ev) => {
+        // expand to full content
+        ev.target.style.height = 'auto';
+        ev.target.style.zIndex = '5';
+    });
+    eventBox.addEventListener('mouseleave', (ev) => {
+        ev.target.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL) * 0.9) - (EVENT_BOX_PADDING * 2)}px`;
+        ev.target.style.zIndex = '1';
+    })
 
     document.getElementById('calendarContainer').appendChild(eventBox);
 }
