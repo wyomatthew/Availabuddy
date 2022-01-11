@@ -80,13 +80,21 @@ table tr td {
 
 /* out container */
 
-#outContainer {
-    margin: 15px;
-}
-
 #leftOut, #rightOut {
     display: inline-block;
     vertical-align: top;
+    width: 44%;
+    
+}
+
+#leftOut {
+    margin-left: 4%;
+    margin-right: 1%;
+}
+
+#rightOut {
+    margin-right: 4%;
+    margin-left: 1%;
 }
 
 #out {
