@@ -54,12 +54,14 @@ let endWeek = new Date(startWeek.valueOf() + (MS_IN_WEEK));
 
 const signInStatus = document.getElementById('signInStatus');
 let userCalendars = new Array();
+let userColors;
 
 // define class to handle each calendar
 class Calendar {
-    constructor(id, summary) {
+    constructor(id, summary, colorId) {
         this.id = id;
         this.summary = summary;
+        this.colorId = colorId;
         this.events = new Array();
     }
 
@@ -135,8 +137,9 @@ function identifyParentCell(startTime) {
  * the calendar
  * 
  * @param {CalendarEvent} calEvent 
+ * @param {Calendar} cal
  */
-function generateEventBox(calEvent) {
+function generateEventBox(calEvent, cal) {
     // get duration of cell in ms
     const startDate = new Date(calEvent.start.dateTime);
     var msStart = startDate.getTime();
@@ -160,6 +163,15 @@ function generateEventBox(calEvent) {
     const eventBox = document.createElement('div');
     eventBox.setAttribute('class', 'eventBox');
     eventBox.setAttribute('id', calEvent.id);
+
+    // case on whether or not event has color
+    if (!calEvent.colorId) {
+        // get calendar's color id
+        eventBox.style.backgroundColor = userColors.calendar[parseInt(cal.colorId)].background;
+    } else {
+        eventBox.style.backgroundColor = userColors.event[parseInt(calEvent.colorId)].background;
+    }
+
     eventBox.style.top = `${parseInt(startCell.offsetTop) + pixelOffset}px`;
     eventBox.style.left = `${parseInt(startCell.offsetLeft)}px`;
     eventBox.style.width = `${parseInt(startCell.offsetWidth)}px`;
@@ -182,7 +194,7 @@ function onBoxTick(ev) {
     if (ev.target.checked) {
         // create all boxes
         cal.events.forEach(ev => {
-            generateEventBox(ev);
+            generateEventBox(ev, cal);
         });
     } else {
         // delete all boxes
@@ -211,7 +223,6 @@ function drawCheckBoxes(calendarList) {
     const container = document.getElementById('rightOut');
 
     // iterate over list
-    console.log(calendarList);
     calendarList.forEach(currCal => {
         // create checkbox and wrapper for current calendar
         const wrapper = document.createElement('div');
@@ -238,14 +249,13 @@ function onSignIn() {
         // iterate over all calendars
         calendarList.forEach(currCal => {
             // create calendar object
-            userCalendars.push(new Calendar(currCal.id, currCal.summary));
+            userCalendars.push(new Calendar(currCal.id, currCal.summary, currCal.colorId));
 
             // create a promise for each calendar
             eventPromises.push(getEvents(currCal.id, startWeek, endWeek));
         });
     }).then(() => {
         Promise.allSettled(eventPromises).then(resultArrays => {
-            console.log(resultArrays);
             // iterate over result arrays
             for (let i = 0; i < resultArrays.length; i++) {
                 // get current calendar and its events
@@ -265,7 +275,9 @@ function onSignIn() {
         });
     });
 
-
+    gapi.client.calendar.colors.get({}).then(response => {
+        userColors = response.result;
+    });
 }
 
 function updateSigninStatus(isSignedIn) {
@@ -374,7 +386,6 @@ function getEvents(calendarId, startDate, endDate, maxResults = 50) {
             'maxResults': maxResults,
             'orderBy': 'startTime'
         }).then(response => {
-            console.log(`Resolving getEvents for calendar ${calendarId}`);
             resolve(response.result.items);
         })
     })
@@ -433,7 +444,6 @@ function listUpcomingEvents(startDate, endDate) {
 
                             var msStart = new Date(event.start.dateTime).getTime();
                             var msEnd = new Date(event.end.dateTime).getTime();
-                            console.log(event);
                             setCalendarBusy(msStart, msEnd);
 
                             // var endDate = new Date(event.end.dateTime).toLocaleString('en-US', {
