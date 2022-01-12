@@ -303,6 +303,16 @@ function onSignIn() {
     });
 }
 
+function deleteCheckboxes() {
+    var container = document.getElementById('rightOut');
+    while (container.firstChild) { 
+        var wrapper = container.firstChild; 
+        container.removeChild(wrapper); 
+    }
+
+    userCalendars = new Array(); 
+}
+
 function updateSigninStatus(isSignedIn) {
     if (isSignedIn) {
         signedIn = true;
@@ -315,6 +325,7 @@ function updateSigninStatus(isSignedIn) {
         // signoutButton.style.display = 'none';
         signInStatus.innerHTML = "Not signed in :("
         signedIn = false;
+        deleteCheckboxes();
     }
 }
 
