@@ -43,14 +43,14 @@ h2 {
     height: 8in;
     width: 90%;
     margin: 15px;
-    background-color: #FFFFFF;
+    background-color: #F6F6F6;
     overflow-y: scroll;
 }
 
 table {
     border-collapse: collapse;
     width: 99.9%;
-    height: 100%;
+    height: 90%;
     user-select: none;
     font-family: monospace;
     font-size: larger;
@@ -90,6 +90,29 @@ table tr td {
     font-family: monospace;
     display: block;
     overflow: hidden;
+}
+
+#calendarButtons {
+    text-align: right;
+}
+
+#calendarContainer button {
+    background-size: 0.25in;
+    background-color: #F6F6F6;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 2px solid  #666666;
+    border-radius: 15px;
+    width: 0.45in;
+    height: 0.45in;
+}
+
+#goLeft {
+    background-image: url("arrow_left.svg");
+}
+
+#goRight {
+    background-image: url("arrow_right.svg");
 }
 
 /* out container */
