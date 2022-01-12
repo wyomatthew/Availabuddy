@@ -293,6 +293,8 @@ let MS_PER_PIXEL;
  * as well as their hour labels
  */
 function drawTable(startDate = startWeek) {
+    console.log((new Date(startDate)).toLocaleDateString());
+
     // empty table
     let currChild = table.lastElementChild;
     while (currChild) {
@@ -515,3 +517,28 @@ function fillOutBox(selectedCellSet) {
         outBox.innerHTML += currBlock.toString() + '\n';
     }
 }
+
+/**
+ * Changes date and calendar according to button press to advance or go back
+ * one week
+ * 
+ * @param {Event} ev
+ * @param {boolean} isForward 
+ */
+function onArrowClick(isForward) {
+    if (isForward) {
+        startWeek = new Date(startWeek.valueOf() + MS_IN_WEEK);
+    } else {
+        startWeek = new Date(startWeek.valueOf() - MS_IN_WEEK);
+    }
+
+    // redraw table
+    drawTable(startWeek);
+}
+
+document.getElementById('goRight').addEventListener('click', (ev) => {
+    onArrowClick(true);
+})
+document.getElementById('goLeft').addEventListener('click', (ev) => {
+    onArrowClick(false);
+})
