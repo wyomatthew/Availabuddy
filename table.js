@@ -287,12 +287,33 @@ function onMouseTableExit(ev) {
 let cellList = new Array();
 let MS_PER_PIXEL;
 
+function hourIndexToTime(hourIndex) {
+    if (hourIndex === 0) {
+        return '12 AM';
+    } else if (hourIndex === 12) {
+        return '12 PM';
+    } else {
+        const isAm = Math.floor(hourIndex / 12) === 0;
+        const hour = hourIndex % 12;
+        if (isAm) {
+            return `${hour} AM`;
+        } else {
+            return `${hour} PM`;
+        }
+
+    }
+}
+
 /**
  * Draws main calendar interface as table on document. First clears all table
  * contents and then draws the day headers, day numbers, and then all hour cells
  * as well as their hour labels
+ * 
+ * @param {Date} startDate date of Sunday
+ * @param {number} startTime start time of first cell of day in ms relative to start of day
+ * @param {number} endTime end time of last cell of day in ms relative to end of day
  */
-function drawTable(startDate = startWeek) {
+function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
     console.log((new Date(startDate)).toLocaleDateString());
 
     // empty table
@@ -353,7 +374,16 @@ function drawTable(startDate = startWeek) {
     cellList = new Array();
 
     // create all cell rows
-    for (let i = 0; i < 24; i++) {
+    const firstHour = startTime / DURATION;
+    const cellsPerColumn = (endTime - startTime) / DURATION;
+    const endHour = endTime / DURATION;
+    console.log(`There are ${cellsPerColumn} cells per column`);
+    // check that cellsPerColumn computes to whole number
+    if (cellsPerColumn !== parseInt(cellsPerColumn)) {
+        throw `Cells per column ${cellsPerColumn} must compute to whole number`;
+    }
+    let i;
+    for (i = firstHour; i < endHour; i++) {
         const currRow = oneHourNode.cloneNode(false);
         currRow.setAttribute('id', `${i}`);
         table.appendChild(currRow);
@@ -364,20 +394,7 @@ function drawTable(startDate = startWeek) {
         rowLabel.setAttribute('class', 'labelCell');
 
         // append time
-        if (i === 0) {
-            rowLabel.appendChild(document.createTextNode('12 AM'));
-        } else if (i === 12) {
-            rowLabel.appendChild(document.createTextNode('12 PM'));
-        } else {
-            const isAm = Math.floor(i / 12) === 0;
-            const hour = i % 12;
-            if (isAm) {
-                rowLabel.appendChild(document.createTextNode(`${hour} AM`));
-            } else {
-                rowLabel.appendChild(document.createTextNode(`${hour} PM`));
-            }
-
-        }
+        rowLabel.appendChild(document.createTextNode(hourIndexToTime(i)));
         currRow.appendChild(rowLabel);
 
         // append 7 cells to the row
@@ -389,8 +406,7 @@ function drawTable(startDate = startWeek) {
             currCell.setAttribute('class', 'timeCell');
 
             // get datetime of current cell and set duration
-            const currDate = new Date(startDate.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
-            currCell.setAttribute('data-datetime', currDate.valueOf());
+            currCell.setAttribute('data-datetime', startDate.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
             currCell.setAttribute('data-duration', DURATION);
             currRow.appendChild(currCell);
 
@@ -410,7 +426,7 @@ function drawTable(startDate = startWeek) {
     const rowLabel = document.createElement('td');
     rowLabel.setAttribute('headers', 'label');
     rowLabel.setAttribute('class', 'labelCell');
-    rowLabel.appendChild(document.createTextNode('12 AM'));
+    rowLabel.appendChild(document.createTextNode(hourIndexToTime(i % 24)));
     finalRow.appendChild(rowLabel);
     table.appendChild(finalRow);
 
@@ -427,7 +443,7 @@ function drawTable(startDate = startWeek) {
     }
 }
 
-drawTable();
+drawTable(startWeek, MS_IN_HOUR * 8, MS_IN_HOUR * 22);
 
 // add mouse up function to table
 table.addEventListener('mouseup', onMouseUp);
