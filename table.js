@@ -4,7 +4,6 @@ const oneHourNode = document.createElement('tr');
 const numToWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 // configure cell width and height
-const CELL_WIDTH = Math.floor((document.getElementById('calendarContainer') * 0.8) * 7);
 const TIME_LABEL_WIDTH = 50;
 // const CELL_HEIGHT = 5;
 
@@ -336,7 +335,6 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
         // create current node
         const currHead = document.createElement('th');
         currHead.setAttribute('id', numToWeek[i]);
-        currHead.style.width = `${CELL_WIDTH}px`;
 
         // set text content
         let content = numToWeek[i];
@@ -361,7 +359,6 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
         // create current node
         const currHead = document.createElement('th');
         currHead.setAttribute('id', numToWeek[i] + 'Num');
-        currHead.style.width = `${CELL_WIDTH}px`;
 
         // assign text content
         // compute current offset from start date
@@ -544,8 +541,10 @@ function fillOutBox(selectedCellSet) {
 function onArrowClick(isForward) {
     if (isForward) {
         startWeek = new Date(startWeek.valueOf() + MS_IN_WEEK);
+        weekIndex++;
     } else {
         startWeek = new Date(startWeek.valueOf() - MS_IN_WEEK);
+        weekIndex--;
     }
 
     // redraw table

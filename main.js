@@ -33,6 +33,7 @@ let signedIn = false;
 // define week date boundaries
 // initialize strating date information on Sunday
 let startWeek = new Date();
+let weekIndex = 0;
 
 // get current day of the week
 const dayOfWeek = startWeek.getDay();
@@ -65,8 +66,77 @@ class Calendar {
         this.events = new Array();
     }
 
-    addEvent(event) {
-        this.events.push(event);
+    /**
+     * Pushes an array of events onto the calendar
+     * 
+     * @param {Array<CalendarEvent} eventList 
+     */
+    addEvents(eventList) {
+        this.events.push(eventList);
+    }
+
+    /**
+     * 
+     * @param {number} weekIndex 
+     * @returns {Array<CalendarEvent>}
+     */
+    getEvents(weekIndex) {
+        return this.events[weekIndex];
+    }
+
+    /**
+     * Iterates over all events in this calendar and performs passed in function
+     * 
+     * @param {(ev: CalendarEvent) => void} onEvent 
+     */
+    iterateOverEvents(onEvent, weekIndex = null) {
+        if (!weekIndex) {
+            // iterate through all events on this calendar
+            for (let i = 0; i < this.events.length; i++) {
+                // get current list of events
+                const currEventList = this.getEvents(i);
+
+                // iterate through all events
+                currEventList.forEach(onEvent);
+            }
+        } else {
+            // iterate over all events in selected week
+            this.getEvents(weekIndex).forEach(onEvent);
+        }
+
+    }
+
+    /**
+    * Removes all event boxes on the table relating to the current calendar
+    * 
+    */
+    removeEvents() {
+        this.iterateOverEvents(ev => {
+            // get current event box
+            const evBox = document.getElementById(ev.id);
+            if (evBox) {
+                document.getElementById('calendarContainer').removeChild(evBox);
+            }
+        })
+    }
+
+    /**
+     * Draws all event boxes on the table relating to passed in calendar and week
+     * 
+     * @param {number} weekIndex 
+     */
+    drawEvents(weekIndex = 0) {
+        this.iterateOverEvents(ev => {
+            generateEventBox(ev, this);
+        }, weekIndex);
+    }
+
+    /**
+     * 
+     * @returns {HTMLElement} checkbox corresponding tot his calendar
+     */
+    getCheckbox() {
+        return document.getElementById(this.id);
     }
 
     toString() {
@@ -130,6 +200,25 @@ function identifyParentCell(startTime) {
 
     // search in entire table
     return searchForElement(0, cellList.length);
+}
+
+/**
+ * Refreshes 
+ * 
+ * @param {number} weekIndex 
+ */
+function refreshEvents(weekIndex = 0) {
+    // iterate over all calendars
+    userCalendars.forEach(cal => {
+        // remove all events from current calendar
+        cal.removeEvents();
+
+        // draw events if the box is ticked for this calendar
+        if (cal.getCheckbox().checked) {
+            // redraw all events
+            cal.drawEvents(weekIndex);
+        }
+    })
 }
 
 /**
@@ -208,31 +297,31 @@ function generateEventBox(calEvent, cal) {
  * @param {Event} ev 
  */
 function onBoxTick(ev) {
-    // get corresponding calendar
-    const cal = userCalendars.find(cal => {
-        return cal.id == ev.target.id;
-    })
+    // // get corresponding calendar
+    // const cal = userCalendars.find(cal => {
+    //     return cal.id == ev.target.id;
+    // })
 
-    // case on whether or not box is ticked
-    if (ev.target.checked) {
-        // create all boxes
-        cal.events.forEach(ev => {
-            generateEventBox(ev, cal);
-        });
-    } else {
-        // delete all boxes
-        cal.events.forEach(ev => {
-            // delete current box
-            try {
-                const currBox = document.getElementById(ev.id);
-                document.getElementById('calendarContainer').removeChild(currBox);
-            } catch (e) {
-                // no event there!
-            }
+    // // case on whether or not box is ticked
+    // if (ev.target.checked) {
+    //     // create all boxes
+    //     cal.events.forEach(ev => {
+    //         generateEventBox(ev, cal);
+    //     });
+    // } else {
+    //     // delete all boxes
+    //     cal.events.forEach(ev => {
+    //         // delete current box
+    //         try {
+    //             const currBox = document.getElementById(ev.id);
+    //             document.getElementById('calendarContainer').removeChild(currBox);
+    //         } catch (e) {
+    //             // no event there!
+    //         }
 
-        });
-    }
-
+    //     });
+    // }
+    refreshEvents();
 
 }
 
@@ -286,9 +375,7 @@ function onSignIn() {
                 const events = resultArrays[i].value;
 
                 // add all events to calendar
-                events.forEach(ev => {
-                    cal.addEvent(ev);
-                });
+                cal.addEvents(events);
             }
 
             // return result
@@ -305,12 +392,12 @@ function onSignIn() {
 
 function deleteCheckboxes() {
     var container = document.getElementById('rightOut');
-    while (container.firstChild) { 
-        var wrapper = container.firstChild; 
-        container.removeChild(wrapper); 
+    while (container.firstChild) {
+        var wrapper = container.firstChild;
+        container.removeChild(wrapper);
     }
 
-    userCalendars = new Array(); 
+    userCalendars = new Array();
 }
 
 function updateSigninStatus(isSignedIn) {
@@ -497,3 +584,11 @@ function listUpcomingEvents(startDate, endDate) {
     })
 
 }
+
+function onResize() {
+    refreshEvents();
+}
+
+window.addEventListener('resize', (ev) => {
+    onResize();
+})
