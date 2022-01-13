@@ -280,7 +280,8 @@ function generateEventBox(calEvent, cal) {
     // add enter and leave changes
     eventBox.addEventListener('mouseenter', (ev) => {
         // expand to full content
-        ev.target.style.height = 'auto';
+        console.log(`Setting height to${Math.max(ev.target.scrollHeight, ev.target.offsetHeight)}`);
+        ev.target.style.height = `${Math.max(ev.target.scrollHeight, ev.target.offsetHeight)}px`;
         ev.target.style.zIndex = '5';
     });
     eventBox.addEventListener('mouseleave', (ev) => {
