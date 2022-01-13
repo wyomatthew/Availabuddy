@@ -44,6 +44,17 @@ const MS_IN_HOUR = MS_IN_DAY / 24;
 const MS_IN_WEEK = MS_IN_DAY * 7;
 startWeek = new Date(startWeek.valueOf() - MS_IN_DAY * (dayOfWeek));
 
+const firstSunday = startWeek;
+
+/**
+ * 
+ * @param {number} weekIndex 
+ * @returns {Date} date of sunday corresponding to week index
+ */
+function getSundayOfWeekIndex(weekIndex) {
+    return new Date(firstSunday.valueOf() + (MS_IN_WEEK * weekIndex));
+}
+
 // get year month and day of sunday
 let year = startWeek.getFullYear();
 let month = startWeek.getMonth() + 1;
@@ -362,12 +373,30 @@ function deleteCheckboxes() {
     userCalendars = new Array();
 }
 
+
+/**
+ * 
+ * @param {Array<Calendar>} calList 
+ * @param {number} weekNum 
+ * @return {Array<Promise<CalendarEvemt>>}
+ */
+function getWeeksEvents(calList, weekNum = weekIndex) {
+    // create array of promises of events for each calendar
+    let eventPromises = new Array();
+
+    // iterate over all calendars and add promise
+    calList.forEach(cal => {
+        eventPromises.push(getEvents(cal.id, getSundayOfWeekIndex(weekNum), getSundayOfWeekIndex(weekNum + 1)));
+    });
+
+    return eventPromises;
+}
+
 /**
  * Body of methods to call upon a user being signed in
  */
 function onSignIn() {
     // get all user calendars
-    let eventPromises = new Array();
     getCalendars().then(calendarList => {
         // iterate over all calendars
         calendarList.forEach(currCal => {
@@ -375,9 +404,10 @@ function onSignIn() {
             userCalendars.push(new Calendar(currCal.id, currCal.summary, currCal.colorId));
 
             // create a promise for each calendar
-            eventPromises.push(getEvents(currCal.id, startWeek, endWeek));
+            // eventPromises.push(getEvents(currCal.id, startWeek, endWeek));
         });
-    }).then(() => {
+        return getWeeksEvents(userCalendars, 0);
+    }).then((eventPromises) => {
         Promise.allSettled(eventPromises).then(resultArrays => {
             // iterate over result arrays
             for (let i = 0; i < resultArrays.length; i++) {
