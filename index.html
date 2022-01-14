@@ -8,6 +8,7 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nanum+Gothic">
 </head>
 
 <body>
@@ -18,8 +19,15 @@
     <div id="calendarContainer">
         <table id='calendarTable'></table>
         <div id="calendarButtons">
-            <button id="goLeft" disabled></button>
-            <button id="goRight"></button>
+            <span id="leftButtons">
+                <button onclick="openMenu()" id="showOptions">Options</button>
+                <button id="goToday" onclick="goToWeek(0)">Today</button>
+            </span>
+
+            <div id="movementButtons">
+                <button id="goLeft" disabled></button>
+                <button id="goRight"></button>
+            </div>
         </div>
     </div>
     <hr>
@@ -36,6 +44,13 @@
     </div>
     <div id='signInStatus'></div>
     <hr>
+
+    <div id="options">
+        <a href="javascript:void(0)" onclick="closeMenu()" id="closeBtn">&times;</a>
+        <div id="optionsContent">
+            <input type="time" name="Test" id="">
+        </div>
+    </div>
 
     <div id="content"></div>
 

@@ -6,6 +6,15 @@ body {
     color: black;
 }
 
+button {
+    background-color: white;
+    border: solid 1px black;
+    /* border-radius: 5px; */
+    padding: 8px;
+    font-family: 'Raleway';
+    font-weight: bold;
+}
+
 button:hover:not(button:disabled) {
     cursor: pointer;
 }
@@ -47,6 +56,7 @@ h2 {
     height: 8in;
     width: 90%;
     margin: 15px;
+    font-family: 'Nanum Gothic';
     background-color: #F6F6F6;
     overflow-y: scroll;
 }
@@ -56,12 +66,12 @@ table {
     width: 99.9%;
     height: 90%;
     user-select: none;
-    font-family: monospace;
+    /* font-family: monospace; */
     font-size: larger;
 }
 
 table tr th {
-    font-family: 'Raleway';
+    /* font-family: 'Nanum Gothic'; */
     font-size: larger;
     padding: 0;
     margin: 0;
@@ -84,6 +94,7 @@ table tr td {
     padding-right: 1%;
     position: relative;
     white-space: nowrap;
+    font-size: small;
     overflow: hidden;
 }
 
@@ -93,16 +104,27 @@ table tr td {
     background-color: red;
     border: 1px solid gray;
     border-radius: 5px;
-    font-family: monospace;
+    font-family: 'Nanum Gothic';
+    font-weight: lighter;
+    font-size: small;
     display: block;
     overflow: hidden;
 }
 
+#leftButtons {
+    margin-inline: 5px;
+}
+
 #calendarButtons {
+    display: flex;
+}
+
+#movementButtons {
+    flex: 1;
     text-align: right;
 }
 
-#calendarContainer button {
+#movementButtons button {
     background-size: 0.25in;
     background-color: #F6F6F6;
     background-repeat: no-repeat;
@@ -123,6 +145,40 @@ table tr td {
 
 button:disabled {
     opacity: 0.5;
+}
+
+/* options menu */
+#options {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    opacity: 0.9;
+    background-color: rgba(0, 0, 0, 0.9) ;
+    overflow-x: hidden;
+}
+
+#optionsContent {
+    position: relative;
+    top: 25%;
+    width: 100%;
+    text-align: center;
+
+}
+
+#closeBtn {
+    position: absolute;
+    top: 20px;
+    right: 45px;
+    font-size: 60px;
+    text-decoration: none;
+    color: white;
+}
+
+#options button:hover {
+    cursor: pointer;
 }
 
 /* out container */

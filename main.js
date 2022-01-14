@@ -547,3 +547,11 @@ function onResize() {
 window.addEventListener('resize', (ev) => {
     onResize();
 })
+
+function openMenu() {
+    document.getElementById('options').style.width = "100%";
+}
+
+function closeMenu() {
+    document.getElementById('options').style.width = "0%";
+}

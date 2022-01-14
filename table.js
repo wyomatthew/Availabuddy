@@ -549,37 +549,16 @@ function goToWeek(week) {
     // populate events for week if not already populated
     if (!isPopulated(week)) {
         // disable buttons
-        document.querySelectorAll('#calendarContainer button').forEach(el => { el.disabled = true; });
+        document.querySelectorAll('#movementButtons button').forEach(el => { el.disabled = true; });
         populateWeeksEvents(userCalendars, week).then((updatedCalendars) => {
             // re-enable buttons
-            document.querySelectorAll('#calendarContainer button').forEach(el => { el.disabled = false; });
+            document.querySelectorAll('#movementButtons button').forEach(el => { el.disabled = false; });
 
             afterEventLoad();
         })
     } else {
         afterEventLoad();
     }
-}
-
-/**
- * Changes date and calendar according to button press to advance or go back
- * one week
- * 
- * @param {Event} ev
- */
-function onArrowClick(ev) {
-    // enable buttons
-    document.querySelectorAll('#calendarContainer button').forEach(el => { el.disabled = false; })
-
-    if (weekIndex < 1) {
-        document.getElementById('goLeft').disabled = true;
-    }
-
-    // redraw table
-    drawTable(startWeek);
-
-    // refresh events
-    refreshEvents(weekIndex);
 }
 
 document.getElementById('goRight').addEventListener('click', (ev) => {
