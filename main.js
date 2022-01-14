@@ -290,7 +290,7 @@ function generateEventBox(calEvent, cal) {
     eventBox.style.top = `${parseInt(startCell.offsetTop) + pixelOffset}px`;
     eventBox.style.left = `${parseInt(startCell.offsetLeft)}px`;
     eventBox.style.width = `${parseInt((startCell.offsetWidth * 0.9) - (EVENT_BOX_PADDING * 2))}px`;
-    eventBox.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL) * 0.9) - (EVENT_BOX_PADDING * 2)}px`;
+    eventBox.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL)) - (EVENT_BOX_PADDING * 2)}px`;
 
     // add enter and leave changes
     eventBox.addEventListener('mouseenter', (ev) => {
