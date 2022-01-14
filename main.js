@@ -40,8 +40,8 @@ const dayOfWeek = startWeek.getDay();
 
 // subtract commensurate number of miliseconds from start
 const MS_IN_DAY = 86400000;
-const MS_IN_HOUR = MS_IN_DAY / 24;
-const MS_IN_WEEK = MS_IN_DAY * 7;
+const MS_IN_HOUR = MS_IN_DAY / 24; // 3600000
+const MS_IN_WEEK = MS_IN_DAY * 7; // 25200000
 startWeek = new Date(startWeek.valueOf() - MS_IN_DAY * (dayOfWeek));
 
 const firstSunday = startWeek;
@@ -248,6 +248,17 @@ function generateEventBox(calEvent, cal) {
     const startDate = new Date(calEvent.start.dateTime);
     var msStart = startDate.getTime();
     var msEnd = new Date(calEvent.end.dateTime).getTime();
+
+    var msStartHour = startDate.getHours() * MS_IN_HOUR; 
+    var msEndHour = new Date(msEnd).getHours() * MS_IN_HOUR; 
+
+    if (msStartHour < startingHour && msEndHour > startingHour) {
+        msStart = msStart + (startingHour - msStartHour); 
+    } 
+
+    if (msEndHour > endingHour) {
+        msEnd = msEnd - (msEndHour - endingHour);
+    }
 
     // find cell where it should start
     let startCell;
