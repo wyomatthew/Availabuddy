@@ -11,7 +11,6 @@ const TIME_LABEL_WIDTH = 50;
 const DURATION = 3600000;
 
 
-
 // initialize function to convert integer values to RFC dates
 function convertDateToRFC(year = 1970, month = 1, day = 1, hour = 0, minute = 0, second = 0) {
     return year.toString() + '-' +
@@ -532,6 +531,40 @@ function fillOutBox(selectedCellSet) {
 }
 
 /**
+ * Moves page to input week while properly maintaining all global variables
+ * 
+ * @param {number} week week index to go to
+ */
+function goToWeek(week) {
+    startWeek = new Date(firstSunday.valueOf() + (week * MS_IN_WEEK));
+    weekIndex = week;
+
+    function afterEventLoad() {
+        // disable left button if we are at first week
+        if (weekIndex < 1) {
+            document.getElementById('goLeft').disabled = true;
+        }
+
+        drawTable();
+        refreshEvents();
+    }
+
+    // populate events for week if not already populated
+    if (!isPopulated(week)) {
+        // disable buttons
+        document.querySelectorAll('#calendarContainer button').forEach(el => { el.disabled = true; });
+        populateWeeksEvents(userCalendars, week).then((updatedCalendars) => {
+            // re-enable buttons
+            document.querySelectorAll('#calendarContainer button').forEach(el => { el.disabled = false; });
+
+            afterEventLoad();
+        })
+    } else {
+        afterEventLoad();
+    }
+}
+
+/**
  * Changes date and calendar according to button press to advance or go back
  * one week
  * 
@@ -553,30 +586,9 @@ function onArrowClick(ev) {
 }
 
 document.getElementById('goRight').addEventListener('click', (ev) => {
-    startWeek = new Date(startWeek.valueOf() + MS_IN_WEEK);
-    weekIndex++;
-
-    // populate events for target week if not already populted
-    if (!isPopulated(weekIndex)) {
-        ev.target.disabled = true;
-        populateWeeksEvents(userCalendars, weekIndex).then((updatedCalendars) => {
-            onArrowClick(ev);
-        })
-    } else {
-        onArrowClick(ev);
-    }
+    goToWeek(weekIndex + 1);
 })
 
 document.getElementById('goLeft').addEventListener('click', (ev) => {
-    startWeek = new Date(startWeek.valueOf() - MS_IN_WEEK);
-    weekIndex--;
-    // populate events for target week if not already populted
-    if (!isPopulated(weekIndex)) {
-        ev.target.disabled = true;
-        populateWeeksEvents(userCalendars, weekIndex).then((updatedCalendars) => {
-            onArrowClick(ev);
-        })
-    } else {
-        onArrowClick(ev);
-    }
+    goToWeek(weekIndex - 1);
 })
