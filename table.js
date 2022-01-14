@@ -91,7 +91,7 @@ function activateElement(el) {
  * @param {HTMLElement} el 
  */
 function deactivateElement(el) {
-    el.style.backgroundColor = 'white';
+    el.style.backgroundColor = '#F6F6F6';
     el.style.borderTopWidth = '1px';
     el.style.borderBottomWidth = '1px';
 }
@@ -437,7 +437,10 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
     }
 }
 
-drawTable(startWeek, MS_IN_HOUR * 8, MS_IN_HOUR * 22);
+var startingHour = MS_IN_HOUR * 8; 
+var endingHour = MS_IN_HOUR * 22; 
+
+drawTable(startWeek, startingHour, endingHour);
 
 // add mouse up function to table
 table.addEventListener('mouseup', onMouseUp);
@@ -562,8 +565,8 @@ document.getElementById('goRight').addEventListener('click', (ev) => {
     } else {
         onArrowClick(ev);
     }
-
 })
+
 document.getElementById('goLeft').addEventListener('click', (ev) => {
     startWeek = new Date(startWeek.valueOf() - MS_IN_WEEK);
     weekIndex--;

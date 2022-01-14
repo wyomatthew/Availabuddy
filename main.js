@@ -40,8 +40,8 @@ const dayOfWeek = startWeek.getDay();
 
 // subtract commensurate number of miliseconds from start
 const MS_IN_DAY = 86400000;
-const MS_IN_HOUR = MS_IN_DAY / 24;
-const MS_IN_WEEK = MS_IN_DAY * 7;
+const MS_IN_HOUR = MS_IN_DAY / 24; // 3600000
+const MS_IN_WEEK = MS_IN_DAY * 7; // 25200000
 startWeek = new Date(startWeek.valueOf() - MS_IN_DAY * (dayOfWeek));
 
 const firstSunday = startWeek;
@@ -249,6 +249,17 @@ function generateEventBox(calEvent, cal) {
     var msStart = startDate.getTime();
     var msEnd = new Date(calEvent.end.dateTime).getTime();
 
+    var msStartHour = startDate.getHours() * MS_IN_HOUR; 
+    var msEndHour = new Date(msEnd).getHours() * MS_IN_HOUR; 
+
+    if (msStartHour < startingHour && msEndHour > startingHour) {
+        msStart = msStart + (startingHour - msStartHour); 
+    } 
+
+    if (msEndHour > endingHour) {
+        msEnd = msEnd - (msEndHour - endingHour);
+    }
+
     // find cell where it should start
     let startCell;
     try {
@@ -290,7 +301,7 @@ function generateEventBox(calEvent, cal) {
     eventBox.style.top = `${parseInt(startCell.offsetTop) + pixelOffset}px`;
     eventBox.style.left = `${parseInt(startCell.offsetLeft)}px`;
     eventBox.style.width = `${parseInt((startCell.offsetWidth * 0.9) - (EVENT_BOX_PADDING * 2))}px`;
-    eventBox.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL) * 0.9) - (EVENT_BOX_PADDING * 2)}px`;
+    eventBox.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL)) - (EVENT_BOX_PADDING * 2)}px`;
 
     // add enter and leave changes
     eventBox.addEventListener('mouseenter', (ev) => {
