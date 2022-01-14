@@ -313,8 +313,6 @@ function hourIndexToTime(hourIndex) {
  * @param {number} endTime end time of last cell of day in ms relative to end of day
  */
 function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
-    console.log((new Date(startDate)).toLocaleDateString());
-
     // empty table
     let currChild = table.lastElementChild;
     while (currChild) {
@@ -374,7 +372,6 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
     const firstHour = startTime / DURATION;
     const cellsPerColumn = (endTime - startTime) / DURATION;
     const endHour = endTime / DURATION;
-    console.log(`There are ${cellsPerColumn} cells per column`);
     // check that cellsPerColumn computes to whole number
     if (cellsPerColumn !== parseInt(cellsPerColumn)) {
         throw `Cells per column ${cellsPerColumn} must compute to whole number`;
@@ -536,24 +533,47 @@ function fillOutBox(selectedCellSet) {
  * one week
  * 
  * @param {Event} ev
- * @param {boolean} isForward 
  */
-function onArrowClick(isForward) {
-    if (isForward) {
-        startWeek = new Date(startWeek.valueOf() + MS_IN_WEEK);
-        weekIndex++;
-    } else {
-        startWeek = new Date(startWeek.valueOf() - MS_IN_WEEK);
-        weekIndex--;
+function onArrowClick(ev) {
+    // enable buttons
+    document.querySelectorAll('#calendarContainer button').forEach(el => { el.disabled = false; })
+
+    if (weekIndex < 1) {
+        document.getElementById('goLeft').disabled = true;
     }
 
     // redraw table
     drawTable(startWeek);
+
+    // refresh events
+    refreshEvents(weekIndex);
 }
 
 document.getElementById('goRight').addEventListener('click', (ev) => {
-    onArrowClick(true);
+    startWeek = new Date(startWeek.valueOf() + MS_IN_WEEK);
+    weekIndex++;
+
+    // populate events for target week if not already populted
+    if (!isPopulated(weekIndex)) {
+        ev.target.disabled = true;
+        populateWeeksEvents(userCalendars, weekIndex).then((updatedCalendars) => {
+            onArrowClick(ev);
+        })
+    } else {
+        onArrowClick(ev);
+    }
+
 })
 document.getElementById('goLeft').addEventListener('click', (ev) => {
-    onArrowClick(false);
+    startWeek = new Date(startWeek.valueOf() - MS_IN_WEEK);
+    weekIndex--;
+    // populate events for target week if not already populted
+    if (!isPopulated(weekIndex)) {
+        ev.target.disabled = true;
+        populateWeeksEvents(userCalendars, weekIndex).then((updatedCalendars) => {
+            onArrowClick(ev);
+        })
+    } else {
+        onArrowClick(ev);
+    }
 })

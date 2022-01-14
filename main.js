@@ -82,8 +82,12 @@ class Calendar {
      * 
      * @param {Array<CalendarEvent} eventList 
      */
-    addEvents(eventList) {
-        this.events.push(eventList);
+    addEvents(eventList, index = null) {
+        if (index) {
+            this.events[index] = eventList;
+        } else {
+            this.events.push(eventList);
+        }
     }
 
     /**
@@ -151,7 +155,7 @@ class Calendar {
     }
 
     toString() {
-        return `ID: ${this.id}, Summary: ${this.summary}, Events: ${this.events.toString()}`;
+        return `ID: ${this.id}, Summary: ${this.summary}, Events: [[${this.events[0]}], [${this.events[1]}], [${this.events[2]}], ...]`;
     }
 }
 
@@ -291,7 +295,6 @@ function generateEventBox(calEvent, cal) {
     // add enter and leave changes
     eventBox.addEventListener('mouseenter', (ev) => {
         // expand to full content
-        console.log(`Setting height to${Math.max(ev.target.scrollHeight, ev.target.offsetHeight)}`);
         ev.target.style.height = `${Math.max(ev.target.scrollHeight, ev.target.offsetHeight)}px`;
         ev.target.style.zIndex = '5';
     });
@@ -373,7 +376,6 @@ function deleteCheckboxes() {
     userCalendars = new Array();
 }
 
-
 /**
  * 
  * @param {Array<Calendar>} calList 
@@ -390,6 +392,49 @@ function getWeeksEvents(calList, weekNum = weekIndex) {
     });
 
     return eventPromises;
+}
+
+/**
+ * Populates input calendar list with all events of passed in week
+ * 
+ * @param {Array<Calendar>} calList 
+ * @param {number} weekNum
+ * @return {Promise<Array<Calendar>>} list of calendars with populated events
+ */
+function populateWeeksEvents(calList, weekNum = weekIndex) {
+    return new Promise((resolve, reject) => {
+        // get weeks events
+        const weeksEvents = getWeeksEvents(calList, weekNum);
+
+        // when all events are got, fill into calendar
+        Promise.allSettled(weeksEvents).then(resultArrays => {
+            for (let i = 0; i < resultArrays.length; i++) {
+                // get current calendar and add events
+                const cal = userCalendars[i];
+                cal.addEvents(resultArrays[i].value, weekNum);
+            }
+
+            resolve(calList);
+        });
+    });
+
+}
+
+/**
+ * Checks if all calendars have been populated at input week number
+ * 
+ * @param {number} weekNum 
+ */
+function isPopulated(weekNum = weekIndex) {
+    // iterate through all calendars
+    for (let i = 0; i < userCalendars.length; i++) {
+        const cal = userCalendars[i];
+        if (cal.getEvents(weekNum) === undefined) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /**
