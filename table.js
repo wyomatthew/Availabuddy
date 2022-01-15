@@ -436,8 +436,8 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
     }
 }
 
-var startingHour = MS_IN_HOUR * 8; 
-var endingHour = MS_IN_HOUR * 22; 
+var startingHour = MS_IN_HOUR * 8;
+var endingHour = MS_IN_HOUR * 22;
 
 drawTable(startWeek, startingHour, endingHour);
 
@@ -540,6 +540,13 @@ function goToWeek(week) {
     weekIndex = week;
 
     function afterEventLoad() {
+        const interval = 5;
+        const step = 0.05;
+
+        // fade out calendar
+        const calendarContainer = document.getElementById('calendarContainer');
+        fadeOut(calendarContainer, interval, step);
+
         // disable left button if we are at first week
         if (weekIndex < 1) {
             document.getElementById('goLeft').disabled = true;
@@ -547,6 +554,8 @@ function goToWeek(week) {
 
         drawTable();
         refreshEvents();
+
+        fadeIn(calendarContainer, interval, step);
     }
 
     // populate events for week if not already populated
