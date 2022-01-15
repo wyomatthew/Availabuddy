@@ -77,6 +77,15 @@ table tr th {
     margin: 0;
 }
 
+table thead {
+    text-align: center; 
+    font-size: x-large;
+    color: #004068;
+    position: relative;
+    top: 0%;
+    left: 50%;
+}
+
 table tr {
     width: 100%;
 }

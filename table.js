@@ -2,6 +2,7 @@
 const table = document.getElementById('calendarTable');
 const oneHourNode = document.createElement('tr');
 const numToWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+const monthNames = ['JANUARY', 'FEBRUARY', 'MARCH', 'ARPIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 
 // configure cell width and height
 const TIME_LABEL_WIDTH = 50;
@@ -318,6 +319,21 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
         table.removeChild(currChild);
         currChild = table.lastElementChild;
     }
+
+    const monthLabelHead = document.createElement('thead');
+    const monthLabelRow = document.createElement('tr');
+    const monthLabel = document.createElement('th');
+    var endDate = new Date(startDate.getTime() + (6 * MS_IN_DAY));
+    if (endDate.getMonth() != startDate.getMonth()) {
+        monthLabel.setAttribute('id', startDate.getMonth() + '/' + endDate.getMonth());
+        monthLabel.appendChild(document.createTextNode(monthNames[startDate.getMonth()] + '/\n' + monthNames[endDate.getMonth()]));
+    } else {
+        monthLabel.setAttribute('id', startDate.getMonth());
+        monthLabel.appendChild(document.createTextNode(monthNames[startDate.getMonth()]));
+    }
+    monthLabelRow.appendChild(monthLabel);
+    monthLabelHead.appendChild(monthLabelRow);
+    table.appendChild(monthLabelHead);
 
     // add day labels
     const dayLabelRow = document.createElement('tr');
