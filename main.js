@@ -252,12 +252,12 @@ function generateEventBox(calEvent, cal) {
     var msStart = startDate.getTime();
     var msEnd = new Date(calEvent.end.dateTime).getTime();
 
-    var msStartHour = startDate.getHours() * MS_IN_HOUR; 
-    var msEndHour = new Date(msEnd).getHours() * MS_IN_HOUR; 
+    var msStartHour = startDate.getHours() * MS_IN_HOUR;
+    var msEndHour = new Date(msEnd).getHours() * MS_IN_HOUR;
 
     if (msStartHour < startingHour && msEndHour > startingHour) {
-        msStart = msStart + (startingHour - msStartHour); 
-    } 
+        msStart = msStart + (startingHour - msStartHour);
+    }
 
     if (msEndHour > endingHour) {
         msEnd = msEnd - (msEndHour - endingHour);
@@ -313,7 +313,7 @@ function generateEventBox(calEvent, cal) {
         ev.target.style.zIndex = '5';
     });
     eventBox.addEventListener('mouseleave', (ev) => {
-        ev.target.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL) * 0.9) - (EVENT_BOX_PADDING * 2)}px`;
+        ev.target.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL)) - (EVENT_BOX_PADDING * 2)}px`;
         ev.target.style.zIndex = '1';
     })
 
@@ -590,4 +590,60 @@ function closeMenu() {
     checkValidStartEnd(); 
     drawTable(startWeek, startVal * MS_IN_HOUR, endVal * MS_IN_HOUR);
     refreshEvents();
+}
+
+/**
+ * 
+ * @param {HTMLElement} elem 
+ * @param {number} interval ms between each change in opacity
+ * @param {number} animStep change in opacity per step
+ * @param {() => void} finishFunc function to call on finishing the animation
+ */
+function fadeIn(elem, interval = 100, animStep = 0.09, finishFunc = (() => { })) {
+    // set opacity to initially be 0
+    elem.style.opacity = 0;
+
+    // configure animatio constants
+    let op = 0;
+
+    let id;
+    id = setInterval(() => {
+        // add opacity
+        op += animStep;
+
+        elem.style.opacity = Math.min(op, 1);
+        // check if we are done
+        if (op >= 1) {
+            clearInterval(id);
+            finishFunc();
+        }
+    }, interval);
+}
+
+/**
+ * 
+ * @param {HTMLElement} elem 
+ * @param {number} interval ms between each change in opacity
+ * @param {number} animStep change in opacity per step
+ * @param {() => void} finishFunc function to call on finishing the animation
+ */
+function fadeOut(elem, interval = 100, animStep = 0.09, finishFunc = (() => { })) {
+    // set opacity to initially be 0
+    elem.style.opacity = 1;
+
+    // configure animatio constants
+    let op = 0;
+
+    let id;
+    id = setInterval(() => {
+        // add opacity
+        op -= animStep;
+
+        elem.style.opacity = Math.max(op, 0);
+        // check if we are done
+        if (op <= 0) {
+            clearInterval(id);
+            finishFunc();
+        }
+    }, interval);
 }

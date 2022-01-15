@@ -540,6 +540,13 @@ function goToWeek(week) {
     weekIndex = week;
 
     function afterEventLoad() {
+        const interval = 5;
+        const step = 0.05;
+
+        // fade out calendar
+        const calendarContainer = document.getElementById('calendarContainer');
+        fadeOut(calendarContainer, interval, step);
+
         // disable left button if we are at first week
         if (weekIndex < 1) {
             document.getElementById('goLeft').disabled = true;
@@ -547,6 +554,8 @@ function goToWeek(week) {
 
         drawTable(startWeek, startVal * MS_IN_HOUR, endVal * MS_IN_HOUR);
         refreshEvents();
+
+        fadeIn(calendarContainer, interval, step);
     }
 
     // populate events for week if not already populated
