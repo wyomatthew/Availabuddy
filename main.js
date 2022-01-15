@@ -254,7 +254,6 @@ function generateEventBox(calEvent, cal) {
 
     const calendarMsStart = startWeek.valueOf() + (startDate.getDay() * MS_IN_DAY) + startVal * MS_IN_HOUR;
     const calendarMsEnd = startWeek.valueOf() + (startDate.getDay() * MS_IN_DAY) + endVal * MS_IN_HOUR;
-    console.log(`Ending hour is ${endVal * MS_IN_HOUR}`);
 
     // fix start time if calendar starts during event
     let effectiveStart = msStart;
@@ -263,25 +262,10 @@ function generateEventBox(calEvent, cal) {
         // fix start time to calendar start time
         effectiveStart = Math.max(calendarMsStart, effectiveStart);
     }
-    console.log(`${calEvent.summary} stats:\n
-        msStart: ${(new Date(msStart)).toLocaleString()}\n
-        msEnd: ${(new Date(msEnd)).toLocaleString()}\n
-        calendar end: ${(new Date(calendarMsEnd)).toLocaleString()}\n\n`);
     if (calendarMsEnd < msEnd && calendarMsEnd > msStart) {
         console.log('Fixing event end time');
         // fix end time to calendar end time
         effectiveEnd = Math.min(calendarMsEnd, effectiveEnd);
-    }
-
-    var msStartHour = startDate.getHours() * MS_IN_HOUR;
-    var msEndHour = new Date(msEnd).getHours() * MS_IN_HOUR;
-
-    if (msStartHour < startingHour && msEndHour > startingHour) {
-        msStart = msStart + (startingHour - msStartHour);
-    }
-
-    if (msEndHour > endingHour) {
-        msEnd = msEnd - (msEndHour - endingHour);
     }
 
     // find cell where it should start
