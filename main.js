@@ -46,8 +46,8 @@ startWeek = new Date(startWeek.valueOf() - MS_IN_DAY * (dayOfWeek));
 
 const firstSunday = startWeek;
 
-var startVal = 8; 
-var endVal = 22; 
+var startVal = 8;
+var endVal = 22;
 
 /**
  * 
@@ -252,6 +252,27 @@ function generateEventBox(calEvent, cal) {
     var msStart = startDate.getTime();
     var msEnd = new Date(calEvent.end.dateTime).getTime();
 
+    const calendarMsStart = startWeek.valueOf() + (startDate.getDay() * MS_IN_DAY) + startVal * MS_IN_HOUR;
+    const calendarMsEnd = startWeek.valueOf() + (startDate.getDay() * MS_IN_DAY) + endVal * MS_IN_HOUR;
+    console.log(`Ending hour is ${endVal * MS_IN_HOUR}`);
+
+    // fix start time if calendar starts during event
+    let effectiveStart = msStart;
+    let effectiveEnd = msEnd;
+    if (calendarMsStart > msStart && calendarMsStart < msEnd) {
+        // fix start time to calendar start time
+        effectiveStart = Math.max(calendarMsStart, effectiveStart);
+    }
+    console.log(`${calEvent.summary} stats:\n
+        msStart: ${(new Date(msStart)).toLocaleString()}\n
+        msEnd: ${(new Date(msEnd)).toLocaleString()}\n
+        calendar end: ${(new Date(calendarMsEnd)).toLocaleString()}\n\n`);
+    if (calendarMsEnd < msEnd && calendarMsEnd > msStart) {
+        console.log('Fixing event end time');
+        // fix end time to calendar end time
+        effectiveEnd = Math.min(calendarMsEnd, effectiveEnd);
+    }
+
     var msStartHour = startDate.getHours() * MS_IN_HOUR;
     var msEndHour = new Date(msEnd).getHours() * MS_IN_HOUR;
 
@@ -266,13 +287,13 @@ function generateEventBox(calEvent, cal) {
     // find cell where it should start
     let startCell;
     try {
-        startCell = identifyParentCell(msStart);
+        startCell = identifyParentCell(effectiveStart);
     } catch (e) {
         return;
     }
 
     // compute offset from top
-    const timeOffset = msStart - parseInt(startCell.dataset.datetime);
+    const timeOffset = effectiveStart - parseInt(startCell.dataset.datetime);
 
     // compute number of pixels offset represents
     const pixelOffset = timeOffset / MS_PER_PIXEL;
@@ -290,6 +311,10 @@ function generateEventBox(calEvent, cal) {
         eventBox.style.backgroundColor = userColors.event[parseInt(calEvent.colorId)].background;
     }
 
+    function computeHeight() {
+        return (((effectiveEnd - effectiveStart) / MS_PER_PIXEL)) - (EVENT_BOX_PADDING * 2);
+    }
+
     // append information
     const boldText = document.createElement('b');
     boldText.appendChild(document.createTextNode(calEvent.summary));
@@ -304,7 +329,7 @@ function generateEventBox(calEvent, cal) {
     eventBox.style.top = `${parseInt(startCell.offsetTop) + pixelOffset}px`;
     eventBox.style.left = `${parseInt(startCell.offsetLeft)}px`;
     eventBox.style.width = `${parseInt((startCell.offsetWidth * 0.9) - (EVENT_BOX_PADDING * 2))}px`;
-    eventBox.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL)) - (EVENT_BOX_PADDING * 2)}px`;
+    eventBox.style.height = `${computeHeight()}px`;
 
     // add enter and leave changes
     eventBox.addEventListener('mouseenter', (ev) => {
@@ -313,7 +338,7 @@ function generateEventBox(calEvent, cal) {
         ev.target.style.zIndex = '5';
     });
     eventBox.addEventListener('mouseleave', (ev) => {
-        ev.target.style.height = `${(((msEnd - msStart) / MS_PER_PIXEL)) - (EVENT_BOX_PADDING * 2)}px`;
+        ev.target.style.height = `${computeHeight()}px`;
         ev.target.style.zIndex = '1';
     })
 
@@ -555,21 +580,21 @@ function getEvents(calendarId, startDate, endDate, maxResults = 50) {
 }
 
 function checkValidStartEnd() {
-    startVal = parseInt(document.getElementById('time1').value); 
-    var amPM = document.getElementById('amPm1').value; 
+    startVal = parseInt(document.getElementById('time1').value);
+    var amPM = document.getElementById('amPm1').value;
     if (amPM == 'pm') {
-        startVal = startVal + 12; 
+        startVal = startVal + 12;
     }
 
-    endVal = parseInt(document.getElementById('time2').value); 
-    var amPM2 = document.getElementById('amPm2').value; 
+    endVal = parseInt(document.getElementById('time2').value);
+    var amPM2 = document.getElementById('amPm2').value;
     if (amPM2 == 'pm') {
-        endVal = endVal + 12; 
+        endVal = endVal + 12;
     }
-    
+
     if (startVal > endVal) {
-        startVal = 8; 
-        endVal = 22; 
+        startVal = 8;
+        endVal = 22;
     }
 }
 
@@ -587,7 +612,7 @@ function openMenu() {
 
 function closeMenu() {
     document.getElementById('options').style.width = "0%";
-    checkValidStartEnd(); 
+    checkValidStartEnd();
     drawTable(startWeek, startVal * MS_IN_HOUR, endVal * MS_IN_HOUR);
     refreshEvents();
 }
