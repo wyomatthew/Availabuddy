@@ -46,6 +46,9 @@ startWeek = new Date(startWeek.valueOf() - MS_IN_DAY * (dayOfWeek));
 
 const firstSunday = startWeek;
 
+var startVal = 8; 
+var endVal = 22; 
+
 /**
  * 
  * @param {number} weekIndex 
@@ -551,6 +554,25 @@ function getEvents(calendarId, startDate, endDate, maxResults = 50) {
 
 }
 
+function checkValidStartEnd() {
+    startVal = parseInt(document.getElementById('time1').value); 
+    var amPM = document.getElementById('amPm1').value; 
+    if (amPM == 'pm') {
+        startVal = startVal + 12; 
+    }
+
+    endVal = parseInt(document.getElementById('time2').value); 
+    var amPM2 = document.getElementById('amPm2').value; 
+    if (amPM2 == 'pm') {
+        endVal = endVal + 12; 
+    }
+    
+    if (startVal > endVal) {
+        startVal = 8; 
+        endVal = 22; 
+    }
+}
+
 function onResize() {
     refreshEvents();
 }
@@ -565,4 +587,7 @@ function openMenu() {
 
 function closeMenu() {
     document.getElementById('options').style.width = "0%";
+    checkValidStartEnd(); 
+    drawTable(startWeek, startVal * MS_IN_HOUR, endVal * MS_IN_HOUR);
+    refreshEvents();
 }

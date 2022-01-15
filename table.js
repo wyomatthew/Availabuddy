@@ -436,8 +436,8 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
     }
 }
 
-var startingHour = MS_IN_HOUR * 8; 
-var endingHour = MS_IN_HOUR * 22; 
+var startingHour = MS_IN_HOUR * startVal; 
+var endingHour = MS_IN_HOUR * endVal; 
 
 drawTable(startWeek, startingHour, endingHour);
 
@@ -545,7 +545,7 @@ function goToWeek(week) {
             document.getElementById('goLeft').disabled = true;
         }
 
-        drawTable();
+        drawTable(startWeek, startVal * MS_IN_HOUR, endVal * MS_IN_HOUR);
         refreshEvents();
     }
 
