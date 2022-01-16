@@ -335,10 +335,10 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
     // monthLabelHeader.appendChild(document.createTextNode('Month'));
     var endDate = new Date(startDate.getTime() + (6 * MS_IN_DAY));
     if (endDate.getMonth() != startDate.getMonth()) {
-        monthLabelHeader.setAttribute('id', startDate.getMonth() + '/' + endDate.getMonth());
-        monthLabelHeader.appendChild(document.createTextNode(monthNames[startDate.getMonth()] + '/\n' + monthNames[endDate.getMonth()]));
+        // monthLabelHeader.setAttribute('id', startDate.getMonth() + '/' + endDate.getMonth());
+        monthLabelHeader.appendChild(document.createTextNode(monthNames[startDate.getMonth()] + '/' + monthNames[endDate.getMonth()]));
     } else {
-        monthLabelHeader.setAttribute('id', startDate.getMonth());
+        // monthLabelHeader.setAttribute('id', startDate.getMonth());
         monthLabelHeader.appendChild(document.createTextNode(monthNames[startDate.getMonth()]));
     }
 
