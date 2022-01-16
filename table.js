@@ -319,12 +319,29 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
         currChild = table.lastElementChild;
     }
 
+    // add month label
+    const monthLabelRow = document.createElement('tr');
+    // add time label header
+    const timeLabelMonth = document.createElement('th');
+    timeLabelMonth.setAttribute('class', 'labelCell');
+    monthLabelRow.appendChild(timeLabelMonth);
+
+    // add month
+    const monthLabelHeader = document.createElement('th');
+    monthLabelHeader.setAttribute('id', 'monthCell');
+    monthLabelHeader.setAttribute('colspan', '7');
+    monthLabelHeader.appendChild(document.createTextNode('Month'));
+    monthLabelRow.appendChild(monthLabelHeader);
+
+    // append row
+    table.appendChild(monthLabelRow);
+
     // add day labels
     const dayLabelRow = document.createElement('tr');
 
     // add time label header
     const timeLabel = document.createElement('th');
-    timeLabel.setAttribute('id', 'label');
+    timeLabel.setAttribute('class', 'labelCell');
     dayLabelRow.appendChild(timeLabel);
 
     // iterate through days of week
@@ -348,7 +365,7 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
 
     // add time label header
     const timeLabelNum = document.createElement('th');
-    timeLabelNum.setAttribute('id', 'labelNum');
+    timeLabelNum.setAttribute('class', 'labelCell');
     dayLabelNumRow.appendChild(timeLabelNum);
 
     // iterate through days of week
@@ -436,8 +453,8 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
     }
 }
 
-var startingHour = MS_IN_HOUR * startVal; 
-var endingHour = MS_IN_HOUR * endVal; 
+var startingHour = MS_IN_HOUR * startVal;
+var endingHour = MS_IN_HOUR * endVal;
 
 drawTable(startWeek, startingHour, endingHour);
 
