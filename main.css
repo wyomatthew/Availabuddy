@@ -87,6 +87,12 @@ table tr td {
     width: 12.5%;
 }
 
+#monthCell {
+    text-align: center; 
+    font-size: x-large;
+    color: #004068;
+}
+
 .labelCell {
     border: 0px;
     width: 4%;
