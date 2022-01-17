@@ -248,22 +248,31 @@ function refreshEvents(weekIndex = 0) {
  */
 function generateEventBox(calEvent, cal) {
     // get duration of cell in ms
-    const startDate = new Date(calEvent.start.dateTime);
+    let startDate;
+    try {
+        startDate = convertRFCToDate(calEvent.start.dateTime, false);
+    } catch (error) {
+        return;
+    }
+
     var msStart = startDate.getTime();
     var msEnd = new Date(calEvent.end.dateTime).getTime();
 
-    const calendarMsStart = startWeek.valueOf() + (startDate.getDay() * MS_IN_DAY) + startVal * MS_IN_HOUR;
-    const calendarMsEnd = startWeek.valueOf() + (startDate.getDay() * MS_IN_DAY) + endVal * MS_IN_HOUR;
+    let calendarMsStart = startWeek.getTime() + (startDate.getUTCDay() * MS_IN_DAY) + startVal * MS_IN_HOUR;
+    let calendarMsEnd = startWeek.getTime() + (startDate.getUTCDay() * MS_IN_DAY) + endVal * MS_IN_HOUR;
+
+    const timezoneOffset = startDate.getTimezoneOffset() - (new Date()).getTimezoneOffset();
+    const blockStart = msStart - (timezoneOffset * MS_IN_HOUR / 60);
+    const blockEnd = msEnd - (timezoneOffset * MS_IN_HOUR / 60);
 
     // fix start time if calendar starts during event
-    let effectiveStart = msStart;
-    let effectiveEnd = msEnd;
+    let effectiveStart = blockStart;
+    let effectiveEnd = blockEnd;
     if (calendarMsStart > msStart && calendarMsStart < msEnd) {
         // fix start time to calendar start time
         effectiveStart = Math.max(calendarMsStart, effectiveStart);
     }
     if (calendarMsEnd < msEnd && calendarMsEnd > msStart) {
-        console.log('Fixing event end time');
         // fix end time to calendar end time
         effectiveEnd = Math.min(calendarMsEnd, effectiveEnd);
     }

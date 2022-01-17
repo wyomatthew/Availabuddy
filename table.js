@@ -25,9 +25,11 @@ function convertDateToRFC(year = 1970, month = 1, day = 1, hour = 0, minute = 0,
 
 /**
  * 
- * @param {String} rfcStr 
+ * @param {String} rfcStr
+ * @param {boolean} isUTC
+ * @return {Date} date of input string
  */
-function convertRFCToDate(rfcStr) {
+function convertRFCToDate(rfcStr, isUTC) {
     const ret = new Date();
     ret.setFullYear(
         parseInt(rfcStr.substring(0, 4)),
@@ -39,6 +41,20 @@ function convertRFCToDate(rfcStr) {
         parseInt(rfcStr.substring(14, 16)),
         parseInt(rfcStr.substring(17, 19))
     );
+
+    // get offset hour and offset minutes
+    const offsetHour = parseInt(rfcStr.substring(21, 23));
+    const offsetMinute = parseInt(rfcStr.substring(24, 26));
+
+    // case on offset sign
+    if (rfcStr.length > 26 && !isUTC) {
+        if (rfcStr.charAt(20) === '-') {
+            ret = new Date(ret.valueOf() - (offsetHour * MS_IN_HOUR) - (offsetMinute * MS_IN_HOUR / 60));
+        } else {
+            ret = new Date(ret.valueOf() + (offsetHour * MS_IN_HOUR) + (offsetMinute * MS_IN_HOUR / 60));
+        }
+    }
+
     return ret;
 }
 
@@ -427,7 +443,7 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
             currCell.setAttribute('class', 'timeCell');
 
             // get datetime of current cell and set duration
-            currCell.setAttribute('data-datetime', startDate.valueOf() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
+            currCell.setAttribute('data-datetime', startDate.getTime() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
             currCell.setAttribute('data-duration', DURATION);
             currRow.appendChild(currCell);
 
