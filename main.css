@@ -173,6 +173,8 @@ button:disabled {
     opacity: 0.9;
     background-color: rgba(0, 0, 0, 0.9) ;
     overflow-x: hidden;
+    text-align: center;
+    padding-top: 20%;
 }
 
 #closeBtn {
@@ -187,6 +189,7 @@ button:disabled {
 #options button:hover {
     cursor: pointer;
 }
+
 
 /* out container */
 
@@ -218,18 +221,4 @@ button:disabled {
     display: inline-block;
     margin-top: 10px;
     
-}
-
-#startTimes {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -25px 0 0 -25px;
-}
-
-#endTimes {
-    position: absolute; 
-    top: 58%; 
-    left: 50%; 
-    margin: -25px 0 0 -25px;
 }
