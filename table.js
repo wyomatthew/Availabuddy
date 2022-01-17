@@ -88,6 +88,23 @@ const timeZones = [
     { "label": "(GMT+13:00) Nuku'alofa", "value": "Pacific/Tongatapu" }
 ]
 
+console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)
+
+
+// initialize timezone select
+const timeZoneSelect = document.getElementById('timeZoneSelect');
+// create an option for each time zone object
+for (const tzObj of timeZones) {
+    // add option
+    const tzEl = document.createElement('option');
+
+    // populate element with fields
+    tzEl.setAttribute('value', tzObj.value);
+    tzEl.appendChild(document.createTextNode(tzObj.label));
+
+    timeZoneSelect.appendChild(tzEl);
+}
+
 // configure cell width and height
 const TIME_LABEL_WIDTH = 50;
 // const CELL_HEIGHT = 5;
@@ -341,23 +358,46 @@ function onMouseUp(ev) {
  * @param {boolean} isStart 
  * @returns String
  */
-function formatDate(date, isStart) {
-    if (!isStart) {
-        return date.toLocaleString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
+function formatDate(date, isStart, useTimezone = false) {
+    // case on whether or not we need to specify timezone
+    if (useTimezone && timeZoneSelect.value !== 'default') {
+        if (!isStart) {
+            return date.toLocaleString('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true,
+                timeZone: timeZoneSelect.value
+            });
+        } else {
+            return date.toLocaleString('en-US', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true,
+                timeZone: timeZoneSelect.value
+            });
+        }
     } else {
-        return date.toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
+        if (!isStart) {
+            return date.toLocaleString('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            });
+        } else {
+            return date.toLocaleString('en-US', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            });
+        }
     }
+
 }
 
 /**
@@ -618,7 +658,7 @@ function fillOutBox(selectedCellSet) {
             // create start and end dates
             const startDate = new Date(this.start);
             const endDate = new Date(this.end);
-            return formatDate(startDate, true) + ' to ' + formatDate(endDate, false);
+            return formatDate(startDate, true, true) + ' to ' + formatDate(endDate, false, true);
         }
     }
 
