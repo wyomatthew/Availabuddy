@@ -88,7 +88,6 @@ const timeZones = [
     { "label": "(GMT+13:00) Nuku'alofa", "value": "Pacific/Tongatapu" }
 ]
 
-console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)
 
 
 // initialize timezone select
@@ -406,7 +405,6 @@ function formatDate(date, isStart, useTimezone = false) {
  * @param {Event} ev 
  */
 function onMouseTableExit(ev) {
-    console.log('Mouse left table!');
     // add current set to total selected
     currSelected.forEach(currCell => {
         // case on selection type to remove or add current element
@@ -596,10 +594,10 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
 
     // offset labels
     const labelCells = document.querySelectorAll('.labelCell');
-    const adjustmentPerCell = document.querySelector('td').offsetHeight / 2;
+    const dataCells = document.querySelectorAll('tr');
     for (let i = 0; i < labelCells.length; i++) {
         // add padding to label
-        labelCells[i].style.bottom = `${adjustmentPerCell}px`;
+        labelCells[i].style.bottom = `${dataCells[i].offsetHeight / 2}px`;
     }
 }
 

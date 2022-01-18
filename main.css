@@ -72,18 +72,10 @@ table {
 
 table tr th {
     /* font-family: 'Nanum Gothic'; */
+    height: 0.4in;
     font-size: larger;
     padding: 0;
     margin: 0;
-}
-
-table thead {
-    text-align: center; 
-    font-size: x-large;
-    color: #004068;
-    position: relative;
-    top: 0%;
-    left: 50%;
 }
 
 table tr {
@@ -111,6 +103,10 @@ table tr td {
     white-space: nowrap;
     font-size: small;
     overflow: hidden;
+}
+
+#finalRow {
+    height: 32px;
 }
 
 .eventBox {
