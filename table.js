@@ -406,6 +406,7 @@ function formatDate(date, isStart, useTimezone = false) {
  * @param {Event} ev 
  */
 function onMouseTableExit(ev) {
+    console.log('Mouse left table!');
     // add current set to total selected
     currSelected.forEach(currCell => {
         // case on selection type to remove or add current element
@@ -611,7 +612,7 @@ drawTable(startWeek, startingHour, endingHour);
 table.addEventListener('mouseup', onMouseUp);
 
 // add mouse exit function to table
-table.addEventListener('mouseleave', onMouseTableExit);
+document.getElementById('calendarContainer').addEventListener('mouseleave', onMouseTableExit);
 
 const outBox = document.getElementById('out');
 
