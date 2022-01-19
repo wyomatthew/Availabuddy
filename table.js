@@ -733,7 +733,6 @@ function goToWeek(week) {
         refreshEvents();
 
         fadeIn(calendarContainer, interval, step);
-        console.log(availableCells);
     }
 
     // populate events for week if not already populated
