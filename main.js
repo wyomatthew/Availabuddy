@@ -512,10 +512,12 @@ function onSignIn() {
 function updateSigninStatus(isSignedIn) {
     if (isSignedIn) {
         signedIn = true;
-        signInStatus.innerText = "Signed in!"
+        document.getElementById('auth').disabled = true; 
+        document.getElementById('signout').disabled = false; 
         onSignIn();
     } else {
-        signInStatus.innerHTML = "Not signed in :("
+        document.getElementById('auth').disabled = false; 
+        document.getElementById('signout').disabled = true; 
         signedIn = false;
         deleteCheckboxes();
     }
