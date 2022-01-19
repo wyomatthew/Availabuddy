@@ -46,53 +46,64 @@
     <hr>
 
     <div id="options">
-        <a href="javascript:void(0)" onclick="closeMenu()" id="closeBtn">&times;</a>
-        <div id="startTimes">
-            <select name="time1" id="time1" value="8">
-                <option value="1">1:00</option>
-                <option value="2">2:00</option>
-                <option value="3">3:00</option>
-                <option value="4">4:00</option>
-                <option value="5">5:00</option>
-                <option value="6">6:00</option>
-                <option value="7">7:00</option>
-                <option selected="selected" value="8">8:00</option>
-                <option value="9">9:00</option>
-                <option value="10">10:00</option>
-                <option value="11">11:00</option>
-                <option value="0">12:00</option>
-            </select>
-            <select name="amPm1" id='amPm1' value="am">
-                <option selected="selected" value="am">AM</option>
-                <option value="pm">PM</option>
-            </select>
-        </div>
-        <br>
-        <div id="endTimes">
-            <select name="time2" id="time2" value="10">
-                <option value="1">1:00</option>
-                <option value="2">2:00</option>
-                <option value="3">3:00</option>
-                <option value="4">4:00</option>
-                <option value="5">5:00</option>
-                <option value="6">6:00</option>
-                <option value="7">7:00</option>
-                <option value="8">8:00</option>
-                <option value="9">9:00</option>
-                <option selected="selected" value="10">10:00</option>
-                <option value="11">11:00</option>
-                <option value="0">12:00</option>
-            </select>
-            <select name="amPm2" id='amPm2' value="pm">
-                <option value="am">AM</option>
-                <option selected value="pm">PM</option>
-            </select>
-        </div>
-        <br>
-        <div id="timeZone">
-            <select id="timeZoneSelect">
-                <option value="default" selected disabled hidden>Local Timezone</option>
-            </select>
+        <div id="optionsBlock">
+            <a href="javascript:void(0)" onclick="closeMenu()" id="closeBtn">&times;</a>
+            <div id="startTimes">
+                <div class="optionsLabel">Start Time:</div>
+                <div class="optionsSelect">
+                    <select name="time1" id="time1" value="8">
+                        <option value="1">1:00</option>
+                        <option value="2">2:00</option>
+                        <option value="3">3:00</option>
+                        <option value="4">4:00</option>
+                        <option value="5">5:00</option>
+                        <option value="6">6:00</option>
+                        <option value="7">7:00</option>
+                        <option selected="selected" value="8">8:00</option>
+                        <option value="9">9:00</option>
+                        <option value="10">10:00</option>
+                        <option value="11">11:00</option>
+                        <option value="0">12:00</option>
+                    </select>
+                    <select name="amPm1" id='amPm1' value="am">
+                        <option selected="selected" value="am">AM</option>
+                        <option value="pm">PM</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div id="endTimes">
+                <div class="optionsLabel">End Time:</div>
+                <div class="optionsSelect">
+                    <select name="time2" id="time2" value="10">
+                        <option value="1">1:00</option>
+                        <option value="2">2:00</option>
+                        <option value="3">3:00</option>
+                        <option value="4">4:00</option>
+                        <option value="5">5:00</option>
+                        <option value="6">6:00</option>
+                        <option value="7">7:00</option>
+                        <option value="8">8:00</option>
+                        <option value="9">9:00</option>
+                        <option selected="selected" value="10">10:00</option>
+                        <option value="11">11:00</option>
+                        <option value="0">12:00</option>
+                    </select>
+                    <select name="amPm2" id='amPm2' value="pm">
+                        <option value="am">AM</option>
+                        <option selected value="pm">PM</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div id="timeZone">
+                <div class="optionsLabel">Output Time Zone:</div>
+                <div class="optionsSelect">
+                    <select id="timeZoneSelect">
+                        <option value="default" selected disabled hidden>Local Timezone</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 

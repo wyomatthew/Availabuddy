@@ -188,11 +188,36 @@ button:disabled {
     z-index: 10;
     left: 0;
     top: 0;
-    opacity: 0.9;
     background-color: rgba(0, 0, 0, 0.9) ;
     overflow-x: hidden;
     text-align: center;
     padding-top: 20%;
+}
+
+#optionsBlock {
+    display: inline-block;
+    padding: 0.5in;
+    background-color: rgba(255, 255, 255, 1);
+    width: 50%;
+    border: 1px solid black;
+}
+
+#optionsBlock div {
+    display: flex;
+    text-align: right;
+}
+
+#optionsBlock div div {
+    display: inline-block;
+}
+
+#optionsBlock select {
+    flex: 1;
+    max-width: min-content;
+}
+
+.optionsSelect {
+    flex: 1;
 }
 
 #closeBtn {
