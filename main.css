@@ -99,7 +99,8 @@ td[data-available="true"] {
 }
 
 td[data-selected="true"] {
-    border: 0px;
+    border-top: 0px;
+    border-bottom: 0px;
 }
 
 .labelCell {
