@@ -706,7 +706,14 @@ function fillOutBox(selectedCellSet) {
  * @param {number} week week index to go to
  */
 function goToWeek(week) {
+    // add all selected cells to list
+    availableCells[weekIndex] = Array();
+    document.querySelectorAll('td[data-available="true"]').forEach(el => {
+        availableCells[weekIndex].push(el);
+    });
+
     startWeek = new Date(firstSunday.valueOf() + (week * MS_IN_WEEK));
+
     weekIndex = week;
 
     function afterEventLoad() {
@@ -726,6 +733,7 @@ function goToWeek(week) {
         refreshEvents();
 
         fadeIn(calendarContainer, interval, step);
+        console.log(availableCells);
     }
 
     // populate events for week if not already populated
