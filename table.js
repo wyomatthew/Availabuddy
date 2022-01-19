@@ -88,6 +88,8 @@ const timeZones = [
     { "label": "(GMT+13:00) Nuku'alofa", "value": "Pacific/Tongatapu" }
 ]
 
+availableCells = new Array(); // 2d array where index represents week index and elements are HTMLElements
+
 
 
 // initialize timezone select
@@ -633,6 +635,15 @@ function fillOutBox(selectedCellSet) {
         constructor(start = 0, end = 0) {
             this.start = parseInt(start);
             this.end = parseInt(end);
+        }
+
+        /**
+         * 
+         * @param {number} startTime start time of event in ms
+         * @returns whether or not input time is contained by this block
+         */
+        contains(startTime) {
+            return startTime >= this.start && startTime < this.end;
         }
 
         setStart(start) {
