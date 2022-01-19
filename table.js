@@ -90,6 +90,14 @@ const timeZones = [
 
 availableCells = new Array(); // 2d array where index represents week index and elements are HTMLElements
 
+function markAvailableWeek(index) {
+    if (availableCells[index] != null) {
+        availableCells[index].forEach(element => {
+            var startTime = parseInt(element.dataset.datetime); 
+            document.querySelector("[data-datetime='" + startTime + "']").setAttribute('data-available', true); 
+        });
+    }
+}
 
 
 // initialize timezone select
@@ -595,6 +603,8 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
         // add padding to label
         labelCells[i].style.bottom = `${dataCells[i].offsetHeight / 2}px`;
     }
+
+    markAvailableWeek(weekIndex); 
 }
 
 var startingHour = MS_IN_HOUR * startVal;
