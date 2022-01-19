@@ -94,6 +94,14 @@ table tr td {
     color: #004068;
 }
 
+td[data-available="true"] {
+    background-color: lightgreen;
+}
+
+td[data-selected="true"] {
+    border: 0px;
+}
+
 .labelCell {
     border: 0px;
     width: 4%;

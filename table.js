@@ -161,8 +161,6 @@ function convertRFCToDate(rfcStr, isUTC) {
 let mouseDown = false;
 
 // initialize grand set and current set of cells that have been highlighted
-let selected = new Set();
-let currSelected = new Set();
 let selectToAdd = true;
 
 // initialize cell of original click
@@ -190,26 +188,12 @@ function compareElements(el1, el2) {
     }
 }
 
-/**
- * Marks an element as activated by coloring it and removing borders
- * 
- * @param {HTMLElement} el 
- */
-function activateElement(el) {
-    el.style.backgroundColor = '#77DD77';
-    el.style.borderTopWidth = '0px';
-    el.style.borderBottomWidth = '0px';
-}
-
-/**
- * Marks an element as deactivated by whiting it out and adding borders
- * 
- * @param {HTMLElement} el 
- */
-function deactivateElement(el) {
-    el.style.backgroundColor = '#F6F6F6';
-    el.style.borderTopWidth = '1px';
-    el.style.borderBottomWidth = '1px';
+function flipState(el) {
+    if (el.dataset.available == "true") {
+        el.setAttribute('data-available', false);
+    } else {
+        el.setAttribute('data-available', true);
+    }
 }
 
 /**
@@ -219,15 +203,11 @@ function deactivateElement(el) {
  * @param {HTMLElement} el 
  */
 function addToCurrent(el) {
-    // case on selection type
-    if (selectToAdd) {
-        // activate the element
-        activateElement(el);
-    } else {
-        // deactivate the element
-        deactivateElement(el);
+    // if the element is not already in destination set, add it to selection
+    if (el.dataset.available != selectToAdd.toString()) {
+        flipState(el);
+        el.setAttribute('data-selected', true);
     }
-    currSelected.add(el);
 }
 
 /**
@@ -237,13 +217,20 @@ function addToCurrent(el) {
  * @param {HTMLElement} el 
  */
 function removeFromCurrent(el) {
-    if (selectToAdd) {
-        // deactivate the element
-        deactivateElement(el);
-    } else {
-        activateElement(el);
+    // remove element from set and revert if it was in selection
+    if (el.dataset.selected) {
+        flipState(el)
+        el.setAttribute('data-selected', false);
     }
-    currSelected.delete(el);
+}
+
+/**
+ * Clears all currently selected cells as selected
+ */
+function clearAllCurrSelected() {
+    document.querySelectorAll('td[data-selected="true"]').forEach(el => {
+        el.setAttribute('data-selected', false);
+    });
 }
 
 /**
@@ -256,11 +243,11 @@ function removeFromCurrent(el) {
 function onMouseDown(ev) {
     // if mouse is not already down, record click
     if (!mouseDown) {
-        // case on whether or not current element is selected for selection type
-        selectToAdd = !selected.has(ev.target);
+        // case on whether or not current element is toggled as available for selection type
+        selectToAdd = ev.target.dataset.available == 'false';
 
         // active cell if it is not already activated
-        currSelected.clear();
+        clearAllCurrSelected();
         addToCurrent(ev.target);
 
         // configure clicked cell as first clicked
@@ -280,22 +267,12 @@ function onMouseDown(ev) {
 function onMouseHover(ev) {
     // activate tile if we are in mouse down mode
     if (mouseDown) {
-        // revert all members of currSelected and recalculate
-        currSelected.forEach(el => {
-            // case on selection type
-            if (selectToAdd) {
-                // deactivate element if it is not already selected
-                if (!selected.has(el)) {
-                    deactivateElement(el);
-                }
-            } else {
-                // activate element if it is a part of selected
-                if (selected.has(el)) {
-                    activateElement(el);
-                }
-            }
+        // revert all currently selected cells and recalculate
+        document.querySelectorAll('td[data-selected="true"]').forEach(el => {
+            // revert to original state
+            flipState(el);
         })
-        currSelected.clear();
+        clearAllCurrSelected();
 
         // identify target and case on if it comes before first
         const target = ev.target;
@@ -334,19 +311,21 @@ function onMouseHover(ev) {
  */
 function onMouseUp(ev) {
     // add current set to total selected
-    currSelected.forEach(currCell => {
-        // case on selection type to remove or add current element
-        if (selectToAdd) {
-            selected.add(currCell);
-        } else {
-            selected.delete(currCell);
-        }
-    });
+    // document.querySelectorAll('td[data-selected="true"]').forEach(currCell => {
+    //     // case on selection type to remove or add current element
+    //     if (selectToAdd) {
+    //         currCell.setAttribute('data-available', true);
+    //     } else {
+    //         currCell.setAttribute('data-available', false);
+    //     }
+    // });
+    // release all selected
+    clearAllCurrSelected();
 
     mouseDown = false;
 
     // fill in out box
-    fillOutBox(selected);
+    fillOutBox(document.querySelectorAll('td[data-available="true"]'));
 }
 
 /**
@@ -579,6 +558,8 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
             // get datetime of current cell and set duration
             currCell.setAttribute('data-datetime', startDate.getTime() + (j * MS_IN_DAY) + (i * MS_IN_HOUR));
             currCell.setAttribute('data-duration', DURATION);
+            currCell.setAttribute('data-selected', false);
+            currCell.setAttribute('data-available', false);
             currRow.appendChild(currCell);
 
             // add to cell list
@@ -623,7 +604,7 @@ drawTable(startWeek, startingHour, endingHour);
 table.addEventListener('mouseup', onMouseUp);
 
 // add mouse exit function to table
-document.getElementById('calendarContainer').addEventListener('mouseleave', onMouseTableExit);
+document.getElementById('calendarContainer').addEventListener('mouseleave', onMouseUp);
 
 const outBox = document.getElementById('out');
 
