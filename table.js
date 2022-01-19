@@ -735,6 +735,8 @@ function goToWeek(week) {
         fadeOut(calendarContainer, interval, step);
 
         // disable left button if we are at first week
+        console.log(`Week index is ${weekIndex}`);
+        document.querySelectorAll('#movementButtons button').forEach(el => { el.disabled = false; });
         if (weekIndex < 1) {
             document.getElementById('goLeft').disabled = true;
         }
@@ -743,7 +745,6 @@ function goToWeek(week) {
         refreshEvents();
 
         fadeIn(calendarContainer, interval, step);
-        console.log(availableCells);
     }
 
     // populate events for week if not already populated
@@ -751,9 +752,6 @@ function goToWeek(week) {
         // disable buttons
         document.querySelectorAll('#movementButtons button').forEach(el => { el.disabled = true; });
         populateWeeksEvents(userCalendars, week).then((updatedCalendars) => {
-            // re-enable buttons
-            document.querySelectorAll('#movementButtons button').forEach(el => { el.disabled = false; });
-
             afterEventLoad();
         })
     } else {
