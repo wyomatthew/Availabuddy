@@ -105,6 +105,16 @@ table tr td {
     overflow: hidden;
 }
 
+.today:not(.dateNum) {
+    background-color: #0095D3;
+    border-radius: 50px;
+    color: white;
+}
+
+.today.dateNum {
+    color: #0095D3;
+}
+
 #finalRow {
     height: 32px;
 }

@@ -499,6 +499,12 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
         const currHead = document.createElement('th');
         currHead.setAttribute('id', numToWeek[i]);
 
+        // set class to today if it matches
+        if (startDate.getMonth() === (new Date()).getMonth() &&
+            startDate.getDate() + i === (new Date()).getDate()) {
+            currHead.setAttribute('class', 'today');
+        }
+
         // set text content
         let content = numToWeek[i];
         content = content.charAt(0).toUpperCase() + content.slice(1, content.length);
@@ -522,6 +528,13 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
         // create current node
         const currHead = document.createElement('th');
         currHead.setAttribute('id', numToWeek[i] + 'Num');
+        currHead.setAttribute('class', 'dateNum');
+
+        // set class to today if it matches
+        if (startDate.getMonth() === (new Date()).getMonth() &&
+            startDate.getDate() + i === (new Date()).getDate()) {
+            currHead.setAttribute('class', currHead.getAttribute('class') + " today");
+        }
 
         // assign text content
         // compute current offset from start date
