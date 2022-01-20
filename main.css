@@ -54,11 +54,14 @@ h2 {
 #calendarContainer {
     position: relative;
     height: 8in;
-    width: 90%;
-    margin: 15px;
+    width: 96%;
+    /* margin: 15px; */
+    margin-top: 20px;
+    padding-left: 2%;
+    padding-right: 2%;
     font-family: 'Nanum Gothic';
     background-color: #F6F6F6;
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
 }
 
 table {
