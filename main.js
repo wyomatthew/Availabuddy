@@ -321,7 +321,7 @@ function generateEventBox(calEvent, cal) {
 
     eventBox.style.padding = `${EVENT_BOX_PADDING}px`;
     eventBox.style.top = `${parseInt(startCell.offsetTop) + pixelOffset}px`;
-    eventBox.style.left = `${parseInt(startCell.offsetLeft)}px`;
+    eventBox.style.left = `${parseInt(startCell.getBoundingClientRect().left)}px`;
     eventBox.style.width = `${parseInt((startCell.offsetWidth * 0.9) - (EVENT_BOX_PADDING * 2))}px`;
     eventBox.style.height = `${computeHeight()}px`;
 
