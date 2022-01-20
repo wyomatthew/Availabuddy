@@ -73,10 +73,11 @@ let userColors;
 
 // define class to handle each calendar
 class Calendar {
-    constructor(id, summary, colorId) {
+    constructor(id, summary, colorId, selected = false) {
         this.id = id;
         this.summary = summary;
         this.colorId = colorId;
+        this.selected = selected;
         this.events = new Array();
     }
 
@@ -389,13 +390,14 @@ function drawCheckBoxes(calendarList) {
         checkBox.setAttribute('type', 'checkbox');
         checkBox.setAttribute('id', currCal.id);
         checkBox.addEventListener('change', onBoxTick);
+        checkBox.checked = currCal.selected;
         wrapper.appendChild(checkBox);
         wrapper.appendChild(document.createTextNode(' ' + currCal.summary));
 
         container.appendChild(wrapper);
     });
 
-
+    refreshEvents();
 }
 
 function deleteCheckboxes() {
@@ -478,7 +480,13 @@ function onSignIn() {
         // iterate over all calendars
         calendarList.forEach(currCal => {
             // create calendar object
-            userCalendars.push(new Calendar(currCal.id, currCal.summary, currCal.colorId));
+            let calSummary;
+            if (currCal.summaryOverride !== undefined) {
+                calSummary = currCal.summaryOverride;
+            } else {
+                calSummary = currCal.summary;
+            }
+            userCalendars.push(new Calendar(currCal.id, calSummary, currCal.colorId, currCal.selected));
 
             // create a promise for each calendar
             // eventPromises.push(getEvents(currCal.id, startWeek, endWeek));
@@ -512,12 +520,12 @@ function onSignIn() {
 function updateSigninStatus(isSignedIn) {
     if (isSignedIn) {
         signedIn = true;
-        document.getElementById('auth').disabled = true; 
-        document.getElementById('signout').disabled = false; 
+        document.getElementById('auth').disabled = true;
+        document.getElementById('signout').disabled = false;
         onSignIn();
     } else {
-        document.getElementById('auth').disabled = false; 
-        document.getElementById('signout').disabled = true; 
+        document.getElementById('auth').disabled = false;
+        document.getElementById('signout').disabled = true;
         signedIn = false;
         deleteCheckboxes();
     }
@@ -543,6 +551,7 @@ function getCalendars() {
     return new Promise((resolve, reject) => {
         // get list of calendars
         gapi.client.calendar.calendarList.list({}).then(response => {
+            console.log(response.result.items);
             resolve(response.result.items);
         });
     });
