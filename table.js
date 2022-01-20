@@ -2,6 +2,7 @@
 const table = document.getElementById('calendarTable');
 const oneHourNode = document.createElement('tr');
 const numToWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+const weekNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const monthNames = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 const timeZones = [
     { "label": "(GMT-12:00) International Date Line West", "value": "Etc/GMT+12" },
@@ -112,6 +113,41 @@ for (const tzObj of timeZones) {
     tzEl.appendChild(document.createTextNode(tzObj.label));
 
     timeZoneSelect.appendChild(tzEl);
+}
+
+// initialize output select
+const outputs = [
+    {
+        "label": "MM/DD/YYYY", "value": {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        }
+
+    },
+    {
+        "label": "Weekday, Month Date", "value": {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        }
+    }
+]
+const outputSelect = document.getElementById('outputSelect');
+for (let i = 0; i < outputs.length; i++) {
+    const outObj = outputs[i]
+    const outEl = document.createElement('option');
+
+    outEl.setAttribute('value', i);
+    outEl.appendChild(document.createTextNode(outObj.label));
+
+    outputSelect.appendChild(outEl);
 }
 
 // configure cell width and height
@@ -343,49 +379,31 @@ function onMouseUp(ev) {
  * Formats the date to make it more readable. 
  * 
  * @param {Date} date 
- * @param {boolean} isStart 
+ * @param {boolean} isStart
+ * @param {boolean} useTimezone
  * @returns String
  */
 function formatDate(date, isStart, useTimezone = false) {
-    // case on whether or not we need to specify timezone
-    if (useTimezone && timeZoneSelect.value !== 'default') {
-        if (!isStart) {
-            return date.toLocaleString('en-US', {
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true,
-                timeZone: timeZoneSelect.value
-            });
-        } else {
-            return date.toLocaleString('en-US', {
-                day: 'numeric',
-                month: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true,
-                timeZone: timeZoneSelect.value
-            });
-        }
-    } else {
-        if (!isStart) {
-            return date.toLocaleString('en-US', {
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            });
-        } else {
-            return date.toLocaleString('en-US', {
-                day: 'numeric',
-                month: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            });
-        }
+    let options = {}
+    for (const prop in outputs[parseInt(document.getElementById('outputSelect').value)].value) {
+        options[prop] = outputs[parseInt(document.getElementById('outputSelect').value)].value[prop];
     }
 
+    if (useTimezone && timeZoneSelect.value !== 'default') {
+        // refresh timezone to input timezone
+        options.timeZone = timeZoneSelect.value;
+    }
+
+    // if it is not start, remove date information
+    if (!isStart) {
+        delete options.year;
+        delete options.month;
+        delete options.day;
+        delete options.weekday;
+
+    }
+
+    return date.toLocaleString('en-US', options);
 }
 
 /**
@@ -767,7 +785,6 @@ function goToWeek(week) {
         fadeOut(calendarContainer, interval, step);
 
         // disable left button if we are at first week
-        console.log(`Week index is ${weekIndex}`);
         document.querySelectorAll('#movementButtons button').forEach(el => { el.disabled = false; });
         if (weekIndex < 1) {
             document.getElementById('goLeft').disabled = true;
