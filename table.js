@@ -93,8 +93,8 @@ availableCells = new Array(); // 2d array where index represents week index and 
 function markAvailableWeek(index) {
     if (availableCells[index] != null) {
         availableCells[index].forEach(element => {
-            var startTime = parseInt(element.dataset.datetime); 
-            document.querySelector("[data-datetime='" + startTime + "']").setAttribute('data-available', true); 
+            var startTime = parseInt(element.dataset.datetime);
+            document.querySelector("[data-datetime='" + startTime + "']").setAttribute('data-available', true);
         });
     }
 }
@@ -604,7 +604,7 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
         labelCells[i].style.bottom = `${dataCells[i].offsetHeight / 2}px`;
     }
 
-    markAvailableWeek(weekIndex); 
+    markAvailableWeek(weekIndex);
 }
 
 var startingHour = MS_IN_HOUR * startVal;
@@ -638,13 +638,16 @@ function fillOutBox(selectedCellSet) {
     selectedCellSet.forEach(el => {
         selectedList.push(el);
     });
-    selectedList.sort(compareElements);
 
     // consolidate adjacent durations
     class Block {
-        constructor(start = 0, end = 0) {
-            this.start = parseInt(start);
-            this.end = parseInt(end);
+        /**
+         * 
+         * @param {HTMLElement} el 
+         */
+        constructor(el) {
+            this.start = parseInt(el.dataset.datetime);
+            this.end = parseInt(el.dataset.datetime) + parseInt(el.dataset.duration);
         }
 
         /**
@@ -674,35 +677,64 @@ function fillOutBox(selectedCellSet) {
             const endDate = new Date(this.end);
             return formatDate(startDate, true, true) + ' to ' + formatDate(endDate, false, true);
         }
+
+        /**
+         * 
+         * @param {Block} a 
+         * @param {Block} b 
+         * @returns difference of start times
+         */
+        static compare(a, b) {
+            return a.start - b.start;
+        }
     }
 
     // iterate through cells and build blocks
     const blockList = new Array();
-    let cellIndex = 0;
-    while (cellIndex < selectedList.length) {
-        // get current selected cell and its end time
-        const currCell = selectedList[cellIndex];
-        let lastEnd = parseInt(currCell.dataset.datetime) + parseInt(currCell.dataset.duration);
-        cellIndex++;
+    function pushCellsAsBlocks(cellList) {
+        cellList.sort(compareElements);
 
-        // build current block
-        const currBlock = new Block(currCell.dataset.datetime, lastEnd);
-
-        // iterate until last end does not match next cell's start time
-        while (cellIndex < selectedList.length &&
-            parseInt(selectedList[cellIndex].dataset.datetime) === lastEnd) {
-
-            // add current block
-            currBlock.extendEnd(selectedList[cellIndex].dataset.duration);
-
-            // go to next and configure last end
-            lastEnd = parseInt(currBlock.end);
+        let cellIndex = 0;
+        while (cellIndex < cellList.length) {
+            // get current selected cell and its end time
+            const currCell = cellList[cellIndex];
             cellIndex++;
+
+            // build current block
+            const currBlock = new Block(currCell);
+            let lastEnd = currBlock.end;
+
+            // iterate until last end does not match next cell's start time
+            while (cellIndex < cellList.length &&
+                parseInt(cellList[cellIndex].dataset.datetime) === lastEnd) {
+
+                // add current block
+                currBlock.extendEnd(cellList[cellIndex].dataset.duration);
+
+                // go to next and configure last end
+                lastEnd = parseInt(currBlock.end);
+                cellIndex++;
+            }
+
+            // add block to list of blocks
+            blockList.push(currBlock);
+        }
+    }
+    pushCellsAsBlocks(selectedList);
+
+    // add all blocks in other weeks
+    for (let i = 0; i < availableCells.length; i++) {
+        // check that we are not at the current week
+        if (i === weekIndex || availableCells[i] === undefined) {
+            continue;
         }
 
-        // add block to list of blocks
-        blockList.push(currBlock);
+        // create blocks for current elements
+        pushCellsAsBlocks(availableCells[i]);
     }
+
+    // sort output blocks
+    blockList.sort(Block.compare);
 
     // output blocks to textarea
     for (const currBlock of blockList) {
