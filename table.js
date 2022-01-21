@@ -155,7 +155,7 @@ const TIME_LABEL_WIDTH = 50;
 // const CELL_HEIGHT = 5;
 
 // configure cell duration in ms
-const DURATION = 3600000;
+const DURATION = 3600000 / 2;
 
 
 // initialize function to convert integer values to RFC dates
@@ -554,27 +554,43 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
     cellList = new Array();
 
     // create all cell rows
-    const firstHour = startTime / DURATION;
+    const firstHour = startTime / MS_IN_HOUR;
     const cellsPerColumn = (endTime - startTime) / DURATION;
-    const endHour = endTime / DURATION;
+    const endHour = endTime / MS_IN_HOUR;
     // check that cellsPerColumn computes to whole number
     if (cellsPerColumn !== parseInt(cellsPerColumn)) {
         throw `Cells per column ${cellsPerColumn} must compute to whole number`;
     }
+
+    // compute number of cells per hour
+    const cellsPerHour = MS_IN_HOUR / DURATION
+    const hoursPerCell = DURATION / MS_IN_HOUR
     let i;
-    for (i = firstHour; i < endHour; i++) {
+    for (i = firstHour; i < endHour; i += hoursPerCell) {
         const currRow = oneHourNode.cloneNode(false);
         currRow.setAttribute('id', `${i}`);
         table.appendChild(currRow);
 
-        // append label cell
-        const rowLabel = document.createElement('td');
-        rowLabel.setAttribute('headers', 'label');
-        rowLabel.setAttribute('class', 'labelCell');
+        // case on if we are at the top of the hour
+        let type;
+        if (parseInt(i) === i) {
+            // append label cell
+            const rowLabel = document.createElement('td');
+            rowLabel.setAttribute('headers', 'label');
+            rowLabel.setAttribute('class', 'labelCell');
+            rowLabel.setAttribute('rowspan', cellsPerHour);
 
-        // append time
-        rowLabel.appendChild(document.createTextNode(hourIndexToTime(i)));
-        currRow.appendChild(rowLabel);
+            // append time
+            rowLabel.appendChild(document.createTextNode(hourIndexToTime(i)));
+            currRow.appendChild(rowLabel);
+
+            // configure type to be top of the hour
+            type = 'start';
+        } else if (i + hoursPerCell === Math.ceil(i)) {
+            // configure type to be bottom of the hour
+            type = 'end';
+        }
+
 
         // append 7 cells to the row
         const cellNode = document.createElement('td');
@@ -588,6 +604,7 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
             currCell.setAttribute('data-duration', DURATION);
             currCell.setAttribute('data-selected', false);
             currCell.setAttribute('data-available', false);
+            currCell.setAttribute('data-type', type);
             currRow.appendChild(currCell);
 
             // add to cell list
@@ -612,15 +629,15 @@ function drawTable(startDate = startWeek, startTime = 0, endTime = MS_IN_DAY) {
 
     // sort cell list based on time order
     cellList.sort(compareElements);
-    MS_PER_PIXEL = DURATION / document.querySelector('td').offsetHeight;
+    MS_PER_PIXEL = DURATION / document.querySelector('td[data-type="start"]').offsetHeight;
 
     // offset labels
-    const labelCells = document.querySelectorAll('.labelCell');
-    const dataCells = document.querySelectorAll('tr');
-    for (let i = 0; i < labelCells.length; i++) {
-        // add padding to label
-        labelCells[i].style.bottom = `${dataCells[i].offsetHeight / 2}px`;
-    }
+    // const labelCells = document.querySelectorAll('.labelCell');
+    // const dataCells = document.querySelectorAll('tr');
+    // for (let i = 0; i < labelCells.length; i++) {
+    //     // add padding to label
+    //     labelCells[i].style.bottom = `${dataCells[i].offsetHeight / 2}px`;
+    // }
 
     markAvailableWeek(weekIndex);
 }

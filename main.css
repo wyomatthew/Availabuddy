@@ -86,8 +86,17 @@ table tr {
 
 table tr td {
     padding: 0;
-    border: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
     width: 12.5%;
+}
+
+table tr td[data-type="start"] {
+    border-top: 1px solid black;
+}
+
+table tr td[data-type="end"] {
+    border-bottom: 1px solid black;
 }
 
 table tr td:not(.labelCell) {
@@ -114,10 +123,12 @@ td[data-selected="true"] {
     width: 4%;
     text-align: right;
     padding-right: 1%;
+    display: table-cell;
     position: relative;
     white-space: nowrap;
     font-size: small;
     overflow: hidden;
+    bottom: 19px;
 }
 
 .today:not(.dateNum) {
