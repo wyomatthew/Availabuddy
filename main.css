@@ -113,7 +113,7 @@ td[data-available="true"] {
     background-color: lightgreen;
 }
 
-td[data-selected="true"] {
+table tr td[data-selected="true"] {
     border-top: 0px;
     border-bottom: 0px;
 }
