@@ -1,29 +1,14 @@
-const PROJECT_NUMBER = '282170708765';
-const API_KEY = 'AIzaSyA3ec3t_lNdoGv_aqqqBNJCyZSfj1umBw4';
-const WEB_CLIENT_KEY = '282170708765-m4s4vcfvqpkt4a5ean74q5q51jg05sa9.apps.googleusercontent.com';
-const DESKTOP_CLIENT_KEY = '282170708765-m4s4vcfvqpkt4a5ean74q5q51jg05sa9.apps.googleusercontent.com';
-const BASE_ENDPOINT = 'https://www.googleapis.com/calendar/v3';
+const ollie = 'QUl6YVN5QzZGMEVpM2M2SGwzb0R1X2xIVTJXaC05UlJZRXFUZ0w0';
+const dec10 = 'MjgyMTcwNzA4NzY1LWpnM3I2a3E3cm5xc2JpajRzaHFhcTByZWFsZTVlM3FzLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29t'
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
-// Enter an API key from the Google API Console:
-//   https://console.developers.google.com/apis/credentials
-var apiKey = 'AIzaSyA3ec3t_lNdoGv_aqqqBNJCyZSfj1umBw4';
+const leftO = 'QUl6YVN5QzZGMEVpM2M2SGwzb0R1';
+const rightO = 'X2xIVTJXaC05UlJZRXFUZ0w0';
 
-// Enter the API Discovery Docs that describes the APIs you want to
-// access. In this example, we are accessing the People API, so we load
-// Discovery Doc found here: https://developers.google.com/people/api/rest/
-var discoveryDocs = ["https://people.googleapis.com/$discovery/rest?version=v1", "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+const leftD = 'MjgyMTcwNzA4NzY1LWpnM3I2a3E3cm5xc2JpajRz';
+const rightD = 'aHFhcTByZWFsZTVlM3FzLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29t';
 
-// Enter a client ID for a web application from the Google API Console:
-//   https://console.developers.google.com/apis/credentials?project=_
-// In your API Console project, add a JavaScript origin that corresponds
-//   to the domain where you will be running the script.
-var clientId = '282170708765-m4s4vcfvqpkt4a5ean74q5q51jg05sa9.apps.googleusercontent.com';
-
-// Enter one or more authorization scopes. Refer to the documentation for
-// the API or https://developers.google.com/people/v1/how-tos/authorizing
-// for details.
-var scopes = 'profile';
+var discoveryDocs = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
 
 var authorizeButton = document.getElementById('auth');
 var signoutButton = document.getElementById('signout');
@@ -170,9 +155,9 @@ function handleClientLoad() {
 
 function initClient() {
     gapi.client.init({
-        apiKey: apiKey,
+        apiKey: atob(leftO) + atob(rightO),
         discoveryDocs: discoveryDocs,
-        clientId: clientId,
+        clientId: atob(leftD) + atob(rightD),
         scope: SCOPES
     }).then(function () {
         // Listen for sign-in state changes.
